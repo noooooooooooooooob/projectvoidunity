@@ -335,7 +335,9 @@ namespace ProjectVoid.Combat
                     {
                         return;
                     }
-                    DeckReshuffled?.Invoke(actor, actor.ReshuffleDiscard(Rng));
+                    // ?.Invoke 안에 넣으면 구독자가 없을 때 리셔플 자체가 건너뛰어진다.
+                    int reshuffled = actor.ReshuffleDiscard(Rng);
+                    DeckReshuffled?.Invoke(actor, reshuffled);
                 }
                 CardData card = actor.DrawOne();
                 CardDrawn?.Invoke(actor, card, actor.Deck.Count, actor.Discard.Count);
