@@ -13,11 +13,12 @@ namespace ProjectVoid.View
     /// </summary>
     public sealed class BattleRoot : MonoBehaviour
     {
+        // Godot 과 같은 44°. 레퍼런스(무기미도)처럼 방을 내려다보는 구도.
         public const float CameraPitchDeg = 44f;
         public const float CameraFovDeg = 40f;
         public const float CameraMargin = 1.8f;
-        // Godot (0, 0, 0.6) 은 카메라 쪽. 유니티에서는 카메라가 -Z 쪽이다.
-        private static readonly Vector3 CameraTargetOffset = new Vector3(0f, 0f, -0.6f);
+        // Godot 은 카메라 쪽으로 0.6 이었다. 배경이 보이도록 보드를 화면 아래로 내리려고 안쪽(+z)을 본다.
+        private static readonly Vector3 CameraTargetOffset = new Vector3(0f, 0f, 0.8f);
 
         /// <summary>테스트가 씬을 띄우기 전에 켜면 연출 대기 없이 재생한다.</summary>
         public static bool ForceInstantPlayback;

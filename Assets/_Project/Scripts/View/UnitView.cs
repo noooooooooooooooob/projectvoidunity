@@ -18,19 +18,26 @@ namespace ProjectVoid.View
         public const float PopTime = 0.6f;
         public const float FadeTime = 0.4f;
         public const float MoveTime = 0.25f;
+        // 발을 축으로 카메라 반대쪽으로 눕히는 각도. 44° 로 내려다볼 때 판이 덜 눌려 보인다.
+        public const float BodyTiltDeg = 20f;
 
         private static readonly Color FlashColor = new Color(1f, 0.45f, 0.45f);
-        private static readonly Color AllyShadowColor = new Color(0.25f, 0.45f, 1f);
-        private static readonly Color EnemyShadowColor = new Color(1f, 0.3f, 0.25f);
+        private static readonly Color ContactShadowColor = new Color(0f, 0f, 0f, 0.7f);
+        private static readonly Color AllyRingColor = new Color(0.3f, 0.55f, 1f, 0.8f);
+        private static readonly Color EnemyRingColor = new Color(1f, 0.3f, 0.25f, 0.8f);
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
         private ViewAssets _assets;
-        private SpriteRenderer _sprite;
+        // 발 위치를 축으로 도는 피벗. 연출(튀어오르기·흔들림)은 이 피벗을 움직인다.
+        private Transform _body;
+        private Material _bodyMaterial;
         private Transform _overhead;
         private TextMeshPro _nameLabel;
         private TextMeshPro _statLabel;
         private SpriteRenderer _hpBack;
         private SpriteRenderer _hpFill;
         private SpriteRenderer _shadow;
+        private SpriteRenderer _ring;
         private BoxCollider _pickCollider;
         private int _hp;
         private int _maxHp = 1;
@@ -41,30 +48,46 @@ namespace ProjectVoid.View
         public CellTag PickTag { get; private set; }
         public string StatText => _statLabel.text;
         public float HpFillWidth => _hpFill.transform.localScale.x;
+        public MeshRenderer BodyRenderer { get; private set; }
+        public Material BodyMaterial => _bodyMaterial;
+        public Color ShadowColor => _shadow.color;
+        public Color RingColor => _ring.color;
 
         public void Setup(Unit unit, Sprite sprite, ViewAssets assets)
         {
             Unit = unit;
             _assets = assets;
 
-            var spriteObject = new GameObject("Sprite");
-            spriteObject.transform.SetParent(transform, false);
-            _sprite = spriteObject.AddComponent<SpriteRenderer>();
-            _sprite.sprite = sprite;
-            // 스프라이트는 오른쪽을 본다. 적은 왼쪽(아군 쪽)을 보도록 뒤집는다.
-            _sprite.flipX = !unit.IsAlly;
-            float spriteHeight = sprite.bounds.size.y;
-            spriteObject.transform.localScale = Vector3.one * (SpriteHeight / spriteHeight);
-            spriteObject.AddComponent<Billboard>().yAxisOnly = true;
+            _body = new GameObject("Body").transform;
+            _body.SetParent(transform, false);
+            var billboard = _body.gameObject.AddComponent<Billboard>();
+            billboard.yAxisOnly = true;
+            billboard.tiltDeg = BodyTiltDeg;
 
-            var shadowObject = new GameObject("Shadow");
-            shadowObject.transform.SetParent(transform, false);
-            shadowObject.transform.localPosition = new Vector3(0f, 0.01f, 0f);
-            shadowObject.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            shadowObject.transform.localScale = new Vector3(0.9f, 0.5f, 1f);
-            _shadow = shadowObject.AddComponent<SpriteRenderer>();
-            _shadow.sprite = assets.Shadow;
-            _shadow.color = unit.IsAlly ? AllyShadowColor : EnemyShadowColor;
+            // SpriteRenderer 는 Lit 조명·그림자를 제대로 받지 못해 판에 텍스처를 입힌 사각형으로 그린다.
+            GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            quad.name = "Sprite";
+            quad.transform.SetParent(_body, false);
+            // 클릭 판정은 유닛 루트의 상자가 맡는다. Destroy 는 프레임 끝이라 먼저 꺼 둔다.
+            Collider quadCollider = quad.GetComponent<Collider>();
+            quadCollider.enabled = false;
+            DestroyImmediateOrLater(quadCollider);
+            float aspect = sprite.rect.width / sprite.rect.height;
+            // 스프라이트는 오른쪽을 본다. 적은 왼쪽(아군 쪽)을 보도록 좌우를 뒤집는다 (머티리얼이 양면이라 음수 스케일 가능).
+            float facing = unit.IsAlly ? 1f : -1f;
+            quad.transform.localScale = new Vector3(SpriteHeight * aspect * facing, SpriteHeight, 1f);
+            quad.transform.localPosition = new Vector3(0f, SpriteHeight / 2f, 0f);
+            _bodyMaterial = new Material(assets.unitMaterial);
+            _bodyMaterial.SetTexture("_BaseMap", sprite.texture);
+            BodyRenderer = quad.GetComponent<MeshRenderer>();
+            BodyRenderer.sharedMaterial = _bodyMaterial;
+            BodyRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
+            BodyRenderer.receiveShadows = false;
+
+            _shadow = FloorDecal("Shadow", assets.Shadow, new Vector3(0.9f, 0.5f, 1f), 0.01f);
+            _shadow.color = ContactShadowColor;
+            _ring = FloorDecal("Ring", assets.Ring, new Vector3(0.95f, 0.6f, 1f), 0.012f);
+            _ring.color = unit.IsAlly ? AllyRingColor : EnemyRingColor;
 
             _overhead = new GameObject("Overhead").transform;
             _overhead.SetParent(transform, false);
@@ -121,8 +144,8 @@ namespace ProjectVoid.View
         public void ResetPose()
         {
             transform.position = HomePosition;
-            _sprite.transform.localPosition = Vector3.zero;
-            _sprite.color = Color.white;
+            _body.localPosition = Vector3.zero;
+            _bodyMaterial.SetColor(BaseColorId, Color.white);
         }
 
         public void SetAlive(bool alive)
@@ -146,7 +169,7 @@ namespace ProjectVoid.View
 
         public IEnumerator Hop()
         {
-            Transform sprite = _sprite.transform;
+            Transform sprite = _body;
             var up = new Vector3(0f, 0.25f, 0f);
             yield return Coroutines.Tween(ActionTime / 2f, t => sprite.localPosition = Vector3.Lerp(Vector3.zero, up, t));
             yield return Coroutines.Tween(ActionTime / 2f, t => sprite.localPosition = Vector3.Lerp(up, Vector3.zero, t));
@@ -156,11 +179,11 @@ namespace ProjectVoid.View
         public IEnumerator FlashAndShake()
         {
             float[] keys = { 0f, 0.08f, -0.08f, 0.05f, 0f };
-            Transform sprite = _sprite.transform;
+            Transform sprite = _body;
             yield return Coroutines.Tween(FlashTime, t =>
             {
                 int quarter = Mathf.Min((int)(t * 4f), 3);
-                _sprite.color = quarter % 2 == 0 && t < 1f ? FlashColor : Color.white;
+                _bodyMaterial.SetColor(BaseColorId, quarter % 2 == 0 && t < 1f ? FlashColor : Color.white);
                 float local = t * 4f - quarter;
                 sprite.localPosition = new Vector3(Mathf.Lerp(keys[quarter], keys[quarter + 1], local), 0f, 0f);
             });
@@ -191,10 +214,12 @@ namespace ProjectVoid.View
             _hpBack.enabled = false;
             _hpFill.enabled = false;
             _shadow.enabled = false;
+            _ring.enabled = false;
             yield return Coroutines.Tween(FadeTime, t =>
             {
                 float alpha = 1f - t;
-                _sprite.color = new Color(1f, 1f, 1f, alpha);
+                // 알파 잘라내기 머티리얼이라 알파를 내리면 픽셀이 점점 사라진다.
+                _bodyMaterial.SetColor(BaseColorId, new Color(1f, 1f, 1f, alpha));
                 _nameLabel.alpha = alpha;
                 _statLabel.alpha = alpha;
             });
@@ -209,6 +234,30 @@ namespace ProjectVoid.View
             fill.localScale = new Vector3(HpBarWidth * ratio, HpBarHeight, 1f);
             fill.localPosition = new Vector3(-HpBarWidth * (1f - ratio) / 2f, 0f, 0f);
             _hpFill.enabled = ratio > 0f;
+        }
+
+        private SpriteRenderer FloorDecal(string name, Sprite sprite, Vector3 scale, float height)
+        {
+            var decalObject = new GameObject(name);
+            decalObject.transform.SetParent(transform, false);
+            decalObject.transform.localPosition = new Vector3(0f, height, 0f);
+            decalObject.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+            decalObject.transform.localScale = scale;
+            var decal = decalObject.AddComponent<SpriteRenderer>();
+            decal.sprite = sprite;
+            return decal;
+        }
+
+        private static void DestroyImmediateOrLater(Object target)
+        {
+            if (Application.isPlaying)
+            {
+                Destroy(target);
+            }
+            else
+            {
+                DestroyImmediate(target);
+            }
         }
 
         private TextMeshPro MakeLabel(string text, float fontSize, Vector3 localPosition)

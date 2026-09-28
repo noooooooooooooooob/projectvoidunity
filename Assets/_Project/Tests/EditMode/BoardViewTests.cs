@@ -70,7 +70,40 @@ namespace ProjectVoid.Tests
         {
             (BattleState state, Board3D board) = BuildBoard();
             UnitView view = board.ViewFor(state.Units[0]);
-            Assert.IsNotNull(view.GetComponentInChildren<SpriteRenderer>().sprite);
+            Assert.AreSame(TestAssets.Load().placeholderSprite.texture, view.BodyMaterial.GetTexture("_BaseMap"));
+        }
+
+        // 종잇장처럼 보이던 문제: 스프라이트가 조명을 받지 않고 그림자도 없었다.
+        [Test]
+        public void UnitBodyIsLitAndCastsAShadow()
+        {
+            (BattleState state, Board3D board) = BuildBoard();
+            UnitView view = board.ViewFor(state.Units[0]);
+            Assert.AreEqual("Universal Render Pipeline/Lit", view.BodyMaterial.shader.name, "body reacts to scene lights");
+            Assert.AreEqual(UnityEngine.Rendering.ShadowCastingMode.TwoSided, view.BodyRenderer.shadowCastingMode, "body drops a real shadow");
+            Assert.IsTrue(view.BodyMaterial.IsKeywordEnabled("_ALPHATEST_ON"), "transparent pixels are cut out, not drawn as a quad");
+        }
+
+        // 수직 판을 44° 로 내려다보면 위아래로 눌려 보였다. 발을 축으로 카메라 쪽으로 살짝 기울인다.
+        [Test]
+        public void UnitLeansTowardTheCamera()
+        {
+            (BattleState state, Board3D board) = BuildBoard();
+            Billboard billboard = board.ViewFor(state.Units[0]).GetComponentInChildren<Billboard>();
+            Assert.IsTrue(billboard.yAxisOnly);
+            Assert.AreEqual(UnitView.BodyTiltDeg, billboard.tiltDeg, 1e-4f);
+            Assert.GreaterOrEqual(UnitView.BodyTiltDeg, 15f);
+        }
+
+        [Test]
+        public void ContactShadowIsDarkAndTeamRingShowsTheSide()
+        {
+            (BattleState state, Board3D board) = BuildBoard();
+            UnitView ally = board.ViewFor(state.Units[0]);
+            UnitView enemy = board.ViewFor(state.Units[1]);
+            Assert.Less(ally.ShadowColor.maxColorComponent, 0.2f, "shadow is dark, not team coloured");
+            Assert.Greater(ally.RingColor.b, ally.RingColor.r, "ally ring is blue");
+            Assert.Greater(enemy.RingColor.r, enemy.RingColor.b, "enemy ring is red");
         }
 
         [Test]

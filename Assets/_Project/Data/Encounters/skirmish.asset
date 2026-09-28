@@ -28,5 +28,5 @@ MonoBehaviour:
     cell: {x: 1, y: 1}
   - unitData: {fileID: 11400000, guid: b473d662f6299dd4f812eda0aaa0d481, type: 2}
     cell: {x: 1, y: 0}
-  groundTexture: {fileID: 2800000, guid: c836e0021d7d89b4bb64af43b9a81e4e, type: 3}
-  backdrop: {fileID: 2800000, guid: 42f84630510e4684895beaeab08b4002, type: 3}
+  groundTexture: {fileID: 2800000, guid: b1f0fd80753510b4582d8ee9f809463c, type: 3}
+  wallTexture: {fileID: 2800000, guid: 934e6c342e8a1c7479c826a7ca7136de, type: 3}

@@ -38,6 +38,16 @@ namespace ProjectVoid.Tests
         }
 
         [Test]
+        public void UnitMaterialIsAlphaClippedLitAndTwoSided()
+        {
+            var material = AssetDatabase.LoadAssetAtPath<Material>(FontSetup.UnitMaterialPath);
+            Assert.IsNotNull(material);
+            Assert.AreEqual("Universal Render Pipeline/Lit", material.shader.name);
+            Assert.IsTrue(material.IsKeywordEnabled("_ALPHATEST_ON"));
+            Assert.AreEqual(0f, material.GetFloat("_Cull"), "both faces render (enemies are mirrored)");
+        }
+
+        [Test]
         public void OverlayMaterialUsesOverlayShader()
         {
             var material = AssetDatabase.LoadAssetAtPath<Material>(FontSetup.OverlayMaterialPath);

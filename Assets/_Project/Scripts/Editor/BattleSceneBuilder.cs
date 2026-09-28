@@ -30,8 +30,12 @@ namespace ProjectVoid.EditorTools
             var lightObject = new GameObject("Directional Light");
             var light = lightObject.AddComponent<Light>();
             light.type = LightType.Directional;
-            light.intensity = 1.2f;
-            lightObject.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+            // 방 전체는 어둡게 두고 배경의 스포트라이트가 명암을 만든다 (레퍼런스: 어두운 실내 + 빛 조각).
+            light.intensity = 0.45f;
+            light.shadows = LightShadows.Soft;
+            lightObject.transform.rotation = Quaternion.Euler(55f, -40f, 0f);
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+            RenderSettings.ambientLight = new Color(0.16f, 0.17f, 0.2f);
 
             new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
 
@@ -45,6 +49,7 @@ namespace ProjectVoid.EditorTools
             assets.FindPropertyRelative("font").objectReferenceValue = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontSetup.FontAssetPath);
             assets.FindPropertyRelative("overlayTextMaterial").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Material>(FontSetup.OverlayMaterialPath);
             assets.FindPropertyRelative("tileMaterial").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Material>(FontSetup.TileMaterialPath);
+            assets.FindPropertyRelative("unitMaterial").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Material>(FontSetup.UnitMaterialPath);
             assets.FindPropertyRelative("placeholderSprite").objectReferenceValue =
                 AssetDatabase.LoadAssetAtPath<Sprite>($"{PixelSpriteProcessor.OutDir}/placeholder_unit.png");
             serialized.ApplyModifiedPropertiesWithoutUndo();

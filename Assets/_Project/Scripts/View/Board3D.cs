@@ -26,10 +26,12 @@ namespace ProjectVoid.View
     {
         public enum TileState { Base, Empty, Current, Valid, Invalid, Movable, ShapeHit, ShapeOut }
 
-        public const float TileThickness = 0.1f;
+        // 레퍼런스처럼 바닥에 박힌 얇은 판. 칸 사이 틈(CellPitch - TileSize)으로 바닥이 보여 테두리 역할을 한다.
+        public const float TileThickness = 0.04f;
         private const float RayLength = 100f;
-        private static readonly Color AllyTileColor = new Color(0.36f, 0.44f, 0.55f);
-        private static readonly Color EnemyTileColor = new Color(0.55f, 0.38f, 0.38f);
+        // 아군 칸은 밝은 콘크리트, 적 칸은 어두운 금속 판.
+        private static readonly Color AllyTileColor = new Color(0.52f, 0.53f, 0.55f);
+        private static readonly Color EnemyTileColor = new Color(0.3f, 0.31f, 0.35f);
         private static readonly Color CurrentEmission = new Color(1f, 0.82f, 0.3f);
         private static readonly Color ValidEmission = new Color(0.45f, 0.85f, 0.45f);
         private static readonly Color MoveEmission = new Color(0.45f, 0.65f, 1f);

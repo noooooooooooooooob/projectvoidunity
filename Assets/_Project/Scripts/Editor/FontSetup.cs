@@ -13,6 +13,7 @@ namespace ProjectVoid.EditorTools
         public const string FontAssetPath = "Assets/_Project/Fonts/NotoSansKR SDF.asset";
         public const string OverlayMaterialPath = "Assets/_Project/Fonts/NotoSansKR Overlay.mat";
         public const string TileMaterialPath = "Assets/_Project/Materials/Tile.mat";
+        public const string UnitMaterialPath = "Assets/_Project/Materials/UnitSprite.mat";
         private const string EssentialsPackage = "Packages/com.unity.ugui/Package Resources/TMP Essential Resources.unitypackage";
 
         [MenuItem("Project Void/Setup Fonts And Materials")]
@@ -61,7 +62,34 @@ namespace ProjectVoid.EditorTools
             EditorUtility.SetDirty(tile);
             AssetDatabase.SaveAssetIfDirty(tile);
 
+            SetupUnitMaterial();
             AssetDatabase.SaveAssets();
+        }
+
+        // 유닛 스프라이트용: 장면 조명을 받고 그림자를 드리우는 Lit, 투명 픽셀은 잘라내고, 적은 좌우 반전(음수 스케일)이라 양면.
+        private static void SetupUnitMaterial()
+        {
+            var unit = AssetDatabase.LoadAssetAtPath<Material>(UnitMaterialPath);
+            if (unit == null)
+            {
+                unit = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                AssetDatabase.CreateAsset(unit, UnitMaterialPath);
+            }
+            unit.SetColor("_BaseColor", Color.white);
+            unit.SetFloat("_AlphaClip", 1f);
+            unit.SetFloat("_Cutoff", 0.5f);
+            unit.SetFloat("_Cull", 0f);
+            // 픽셀아트가 번들거리지 않게 광택·반사를 끈다.
+            unit.SetFloat("_Smoothness", 0f);
+            unit.SetFloat("_SpecularHighlights", 0f);
+            unit.SetFloat("_EnvironmentReflections", 0f);
+            unit.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
+            // 키워드는 다른 설정 뒤에 켜야 저장된다 (Tile.mat 과 같은 이유).
+            unit.EnableKeyword("_ALPHATEST_ON");
+            unit.EnableKeyword("_SPECULARHIGHLIGHTS_OFF");
+            unit.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
+            EditorUtility.SetDirty(unit);
+            AssetDatabase.SaveAssetIfDirty(unit);
         }
     }
 }

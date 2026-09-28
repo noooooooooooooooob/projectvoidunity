@@ -13,6 +13,7 @@ namespace ProjectVoid.Tests
             font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontSetup.FontAssetPath),
             overlayTextMaterial = AssetDatabase.LoadAssetAtPath<Material>(FontSetup.OverlayMaterialPath),
             tileMaterial = AssetDatabase.LoadAssetAtPath<Material>(FontSetup.TileMaterialPath),
+            unitMaterial = AssetDatabase.LoadAssetAtPath<Material>(FontSetup.UnitMaterialPath),
             placeholderSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Art/Units/placeholder_unit.png"),
         };
     }
