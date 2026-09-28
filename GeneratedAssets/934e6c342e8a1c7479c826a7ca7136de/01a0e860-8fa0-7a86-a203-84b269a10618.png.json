@@ -1,0 +1,31 @@
+{
+    "asset": "934e6c342e8a1c7479c826a7ca7136de",
+    "fileName": "01a0e860-8fa0-7a86-a203-84b269a10618.png",
+    "prompt": "Seamless horizontally tileable front-view texture of a dark industrial warehouse interior wall: grimy concrete lower wall with rust stains, vertical steel support pillar, row of tall multi-pane factory windows in the upper half with dim grey light behind dirty glass, a pipe running along the wall, desaturated grey-teal palette with slight warm rust accents, semi-realistic game art, flat even lighting, no text.",
+    "negativePrompt": "",
+    "model": "scenario-texture",
+    "modelName": "Scenario Texture",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

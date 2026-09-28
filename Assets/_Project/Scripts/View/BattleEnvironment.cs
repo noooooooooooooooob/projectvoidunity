@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ProjectVoid.Combat;
 using UnityEngine;
 
@@ -29,11 +30,12 @@ namespace ProjectVoid.View
         public GameObject BackWall { get; private set; }
         public GameObject LeftWall { get; private set; }
         public GameObject RightWall { get; private set; }
+        public List<GameObject> Props { get; } = new List<GameObject>();
 
-        /// <summary>인카운터에 바닥·벽 텍스처가 하나도 없으면 null.</summary>
+        /// <summary>인카운터에 바닥·벽 텍스처와 소품이 하나도 없으면 null.</summary>
         public static BattleEnvironment Build(Transform parent, BoardLayout layout, EncounterData encounter, Material baseMaterial)
         {
-            if (encounter.groundTexture == null && encounter.wallTexture == null)
+            if (encounter.groundTexture == null && encounter.wallTexture == null && encounter.props.Count == 0)
             {
                 return null;
             }
@@ -75,7 +77,56 @@ namespace ProjectVoid.View
                 SpotLight(root.transform, new Vector3(leftX + (rightX - leftX) * 0.3f, WallHeight, backZ - 0.5f), center + new Vector3(-1.5f, 0f, 0.5f));
                 SpotLight(root.transform, new Vector3(leftX + (rightX - leftX) * 0.75f, WallHeight, backZ - 0.5f), center + new Vector3(2.5f, 0f, -0.5f));
             }
+
+            foreach (PropPlacement placement in encounter.props)
+            {
+                if (placement.prefab != null)
+                {
+                    environment.Props.Add(Prop(root.transform, placement, floorY));
+                }
+            }
             return environment;
+        }
+
+        private static GameObject Prop(Transform parent, PropPlacement placement, float floorY)
+        {
+            GameObject prop = Instantiate(placement.prefab, parent);
+            prop.name = placement.prefab.name;
+            // AI 모델 루트에는 세우는 회전이 들어 있다. 그 위에 yaw 를 더해야 눕지 않는다.
+            prop.transform.rotation = Quaternion.Euler(0f, placement.yaw, 0f) * placement.prefab.transform.rotation;
+            prop.transform.position = new Vector3(placement.position.x, floorY, placement.position.z);
+            // AI 로 만든 모델은 원본 크기가 제각각이라 지정한 높이로 맞춘다.
+            Bounds bounds = RendererBounds(prop);
+            if (bounds.size.y > 0f)
+            {
+                prop.transform.localScale *= placement.height / bounds.size.y;
+            }
+            bounds = RendererBounds(prop);
+            prop.transform.position += Vector3.up * (floorY - bounds.min.y);
+            foreach (Collider collider in prop.GetComponentsInChildren<Collider>())
+            {
+                DestroyCollider(collider);
+            }
+            foreach (Renderer renderer in prop.GetComponentsInChildren<Renderer>())
+            {
+                renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            }
+            return prop;
+        }
+
+        private static Bounds RendererBounds(GameObject target)
+        {
+            Renderer[] renderers = target.GetComponentsInChildren<Renderer>();
+            if (renderers.Length == 0)
+            {
+                return new Bounds(target.transform.position, Vector3.zero);
+            }
+            Bounds bounds = renderers[0].bounds;
+            for (int i = 1; i < renderers.Length; i++)
+            {
+                bounds.Encapsulate(renderers[i].bounds);
+            }
+            return bounds;
         }
 
         private static GameObject Wall(string name, Transform parent, Texture2D texture, Material baseMaterial,

@@ -1,0 +1,31 @@
+{
+    "asset": "b1f0fd80753510b4582d8ee9f809463c",
+    "fileName": "01a0e85f-b28f-7024-bd1d-3c0fdd487400.png",
+    "prompt": "Seamless tileable top-down texture of an old industrial warehouse concrete floor: worn grey cement slabs with faint expansion joints, subtle stains, scuffs and fine cracks, a few faded painted lines, desaturated cool grey palette, semi-realistic game art, flat even lighting, no strong shadows, no text.",
+    "negativePrompt": "",
+    "model": "scenario-texture",
+    "modelName": "Scenario Texture",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

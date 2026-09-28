@@ -1,0 +1,31 @@
+{
+    "asset": "92145292d5e4e9947a8a16c9dddfdff2",
+    "fileName": "01a0e869-14f2-72c0-bea8-fc4f0c1ed3d1.png",
+    "prompt": "A single game prop, 3/4 isometric view, centered, isolated on a plain white background: a rusty dented steel oil drum barrel with a faded red hazard band, dark industrial warehouse style, semi-realistic stylized game art, muted desaturated colors, whole object visible, no shadow, no text.",
+    "negativePrompt": "",
+    "model": "gpt-image-1-5",
+    "modelName": "GPT Image 1.5",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

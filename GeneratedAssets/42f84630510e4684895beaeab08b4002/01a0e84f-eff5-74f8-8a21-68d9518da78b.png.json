@@ -1,0 +1,31 @@
+{
+    "asset": "42f84630510e4684895beaeab08b4002",
+    "fileName": "01a0e84f-eff5-74f8-8a21-68d9518da78b.png",
+    "prompt": "Game battle background, semi-realistic anime illustration with a dark gritty urban dystopia mood: the far end of a ruined city back alley at night seen from street level, looking straight down the alley. Rain-soaked crumbling concrete walls, rusted fire escapes, dangling cables, broken neon signs with a few flickering characters, red rotating emergency beacon light casting red glow, cold teal and grey desaturated palette with strong chiaroscuro lighting and red accent light, light fog. No people, no characters, no text. The lower third is the wet alley floor fading into the distance so it can meet a ground plane; strong perspective vanishing point near the center.",
+    "negativePrompt": "",
+    "model": "gpt-image-1-5",
+    "modelName": "GPT Image 1.5",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

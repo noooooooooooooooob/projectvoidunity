@@ -91,6 +91,41 @@ namespace ProjectVoid.Tests
             Assert.Greater(env.RightWall.GetComponent<Renderer>().bounds.min.x, layout.MaxX(), "right wall is right of the enemy side");
         }
 
+        // AI 로 만든 3D 소품은 원본 크기가 제각각이다. 지정한 높이로 맞추고 바닥에 밑면을 붙인다.
+        [Test]
+        public void PropsAreScaledToHeightAndRestOnTheFloor()
+        {
+            GameObject prefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            prefab.transform.SetParent(_parent.transform);
+            EncounterData encounter = Make.Asset<EncounterData>();
+            encounter.props.Add(new PropPlacement { prefab = prefab, position = new Vector3(-5f, 0f, 3f), yaw = 30f, height = 2f });
+            BattleEnvironment env = BattleEnvironment.Build(_parent.transform, Layout(), encounter, TestAssets.Load().tileMaterial);
+            Assert.AreEqual(1, env.Props.Count);
+            GameObject prop = env.Props[0];
+            Bounds bounds = prop.GetComponentInChildren<Renderer>().bounds;
+            Assert.AreEqual(2f, bounds.size.y, 0.01f, "scaled to the requested height");
+            Assert.AreEqual(-Board3D.TileThickness, bounds.min.y, 0.01f, "rests on the floor");
+            Assert.AreEqual(-5f, prop.transform.position.x, 0.01f);
+            Assert.AreEqual(3f, prop.transform.position.z, 0.01f);
+            Assert.AreEqual(30f, prop.transform.eulerAngles.y, 0.01f);
+            Assert.AreEqual(0, prop.GetComponentsInChildren<Collider>().Length, "props must not catch board clicks");
+            Assert.AreNotEqual(UnityEngine.Rendering.ShadowCastingMode.Off, prop.GetComponentInChildren<Renderer>().shadowCastingMode);
+        }
+
+        // 버그: AI 모델은 루트에 세우는 회전(270,90,0)이 들어 있는데, yaw 로 덮어써서 드럼통·선풍기가 누웠다.
+        [Test]
+        public void PropKeepsTheModelsOwnUprightRotation()
+        {
+            GameObject prefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            prefab.transform.SetParent(_parent.transform);
+            prefab.transform.rotation = Quaternion.Euler(270f, 90f, 0f);
+            EncounterData encounter = Make.Asset<EncounterData>();
+            encounter.props.Add(new PropPlacement { prefab = prefab, position = Vector3.zero, yaw = 45f, height = 1f });
+            GameObject prop = BattleEnvironment.Build(_parent.transform, Layout(), encounter, TestAssets.Load().tileMaterial).Props[0];
+            Quaternion expected = Quaternion.Euler(0f, 45f, 0f) * Quaternion.Euler(270f, 90f, 0f);
+            Assert.Less(Quaternion.Angle(expected, prop.transform.rotation), 0.1f, "yaw is applied on top of the model's own rotation");
+        }
+
         // 벽이 고르게 밝아 평면적으로 보였다. 비스듬한 스포트라이트로 바닥에 빛 조각과 명암을 만든다.
         [Test]
         public void SpotLightsCastPoolsOfLight()

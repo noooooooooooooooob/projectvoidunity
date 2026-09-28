@@ -1,0 +1,31 @@
+{
+    "asset": "a2526b48923d8cf4290d740276320261",
+    "fileName": "01a0e86a-34a0-7469-b041-3f4278a3a91d.png",
+    "prompt": "A single game prop, 3/4 isometric view, centered, isolated on a plain white background: a large freestanding industrial floor fan with a round steel cage and metal stand, grimy and slightly rusted, dark industrial warehouse style, semi-realistic stylized game art, muted desaturated colors, whole object visible, no shadow, no text.",
+    "negativePrompt": "",
+    "model": "gpt-image-1-5",
+    "modelName": "GPT Image 1.5",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

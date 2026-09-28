@@ -14,5 +14,7 @@ namespace ProjectVoid.Combat
         // 표현용 배경 (방 디오라마). 비워 두면 단색 배경. 둘 다 반복되는 텍스처: 바닥, 뒷벽·옆벽.
         public Texture2D groundTexture;
         public Texture2D wallTexture;
+        // 방에 놓을 3D 소품. 보드 칸을 가리지 않는 가장자리에 둔다.
+        public List<PropPlacement> props = new List<PropPlacement>();
     }
 }

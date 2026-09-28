@@ -1,0 +1,23 @@
+{
+    "asset": "c34de1b78215ac04b837eb1c9cd4457d",
+    "fileName": "01a0e871-4f4e-7834-a028-104c74d34317.fbx",
+    "prompt": "yellow steel safety railing section",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p2",
+    "modelName": "Tripo P2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "b4897109df383014194587c79f4ac326",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

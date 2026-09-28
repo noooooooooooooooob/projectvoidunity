@@ -1,0 +1,23 @@
+{
+    "asset": "6a6993d17d894f14b848e24b2d2ef70e",
+    "fileName": "01a0e86f-7f66-78ab-a660-78c1f5042762.fbx",
+    "prompt": "rusty steel oil drum barrel",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p2",
+    "modelName": "Tripo P2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "92145292d5e4e9947a8a16c9dddfdff2",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

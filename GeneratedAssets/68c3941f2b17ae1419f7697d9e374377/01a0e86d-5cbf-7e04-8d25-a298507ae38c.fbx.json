@@ -1,0 +1,23 @@
+{
+    "asset": "68c3941f2b17ae1419f7697d9e374377",
+    "fileName": "01a0e86d-5cbf-7e04-8d25-a298507ae38c.fbx",
+    "prompt": "stack of weathered wooden shipping crates",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p2",
+    "modelName": "Tripo P2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "34804ed2fb3ba7f45975d1ab254c92cf",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}

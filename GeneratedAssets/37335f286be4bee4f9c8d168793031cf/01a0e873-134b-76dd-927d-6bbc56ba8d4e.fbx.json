@@ -1,0 +1,23 @@
+{
+    "asset": "37335f286be4bee4f9c8d168793031cf",
+    "fileName": "01a0e873-134b-76dd-927d-6bbc56ba8d4e.fbx",
+    "prompt": "industrial floor fan with steel cage and stand",
+    "negativePrompt": "",
+    "model": "model3d-tripo-p2",
+    "modelName": "Tripo P2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "promptImageReferenceGuid": "a2526b48923d8cf4290d740276320261",
+    "modelReferenceGuid": "",
+    "multiviewFrontGuid": "",
+    "multiviewBackGuid": "",
+    "multiviewLeftGuid": "",
+    "multiviewRightGuid": "",
+    "multiviewTopGuid": "",
+    "multiviewBottomGuid": "",
+    "multiviewLeftFrontGuid": "",
+    "multiviewRightFrontGuid": "",
+    "faceLimit": -1
+}
