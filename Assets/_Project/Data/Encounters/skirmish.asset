@@ -30,6 +30,8 @@ MonoBehaviour:
     cell: {x: 1, y: 0}
   groundTexture: {fileID: 2800000, guid: b1f0fd80753510b4582d8ee9f809463c, type: 3}
   wallTexture: {fileID: 2800000, guid: 934e6c342e8a1c7479c826a7ca7136de, type: 3}
+  allyTileTexture: {fileID: 2800000, guid: 729116e47db0ab943885d6f8a427ae3f, type: 3}
+  enemyTileTexture: {fileID: 2800000, guid: cf57eef8248f21843ae0d1f7120d531b, type: 3}
   props:
   - prefab: {fileID: 1668477920299643764, guid: 68c3941f2b17ae1419f7697d9e374377, type: 3}
     position: {x: -5.8, y: 0, z: 2.7}

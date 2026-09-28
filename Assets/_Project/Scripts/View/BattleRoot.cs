@@ -55,7 +55,7 @@ namespace ProjectVoid.View
 
             Board = new GameObject("Board").AddComponent<Board3D>();
             Board.transform.SetParent(transform, false);
-            Board.Build(State, assets);
+            Board.Build(State, assets, encounter.allyTileTexture, encounter.enemyTileTexture);
             Board.SyncFromState(State);
             BattleEnvironment.Build(transform, Board.Layout, encounter, assets.tileMaterial);
 

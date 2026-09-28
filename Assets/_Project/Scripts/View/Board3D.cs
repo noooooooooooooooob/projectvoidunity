@@ -27,11 +27,13 @@ namespace ProjectVoid.View
         public enum TileState { Base, Empty, Current, Valid, Invalid, Movable, ShapeHit, ShapeOut }
 
         // 레퍼런스처럼 바닥에 박힌 얇은 판. 칸 사이 틈(CellPitch - TileSize)으로 바닥이 보여 테두리 역할을 한다.
-        public const float TileThickness = 0.04f;
+        public const float TileThickness = 0.08f;
         private const float RayLength = 100f;
         // 아군 칸은 밝은 콘크리트, 적 칸은 어두운 금속 판.
         private static readonly Color AllyTileColor = new Color(0.52f, 0.53f, 0.55f);
         private static readonly Color EnemyTileColor = new Color(0.3f, 0.31f, 0.35f);
+        // 텍스처가 이미 제 색을 가지므로 살짝만 눌러 준다.
+        private static readonly Color TexturedTileTint = new Color(0.85f, 0.85f, 0.88f);
         private static readonly Color CurrentEmission = new Color(1f, 0.82f, 0.3f);
         private static readonly Color ValidEmission = new Color(0.45f, 0.85f, 0.45f);
         private static readonly Color MoveEmission = new Color(0.45f, 0.65f, 1f);
@@ -50,6 +52,8 @@ namespace ProjectVoid.View
         private readonly Dictionary<(Team, Vector2Int), TextMeshPro> _hints = new Dictionary<(Team, Vector2Int), TextMeshPro>();
         private readonly Dictionary<Unit, UnitView> _views = new Dictionary<Unit, UnitView>();
         private ViewAssets _assets;
+        private Texture2D _allyTileTexture;
+        private Texture2D _enemyTileTexture;
         private Vector2 _pendingClick;
         private bool _hasPendingClick;
         private Vector2 _pointer;
@@ -64,9 +68,11 @@ namespace ProjectVoid.View
         public Func<bool> UiDragActive { get; set; }
         public int TileCount => _tiles.Count;
 
-        public void Build(BattleState state, ViewAssets assets)
+        public void Build(BattleState state, ViewAssets assets, Texture2D allyTileTexture = null, Texture2D enemyTileTexture = null)
         {
             _assets = assets;
+            _allyTileTexture = allyTileTexture;
+            _enemyTileTexture = enemyTileTexture;
             Layout = new BoardLayout(state.Resolver.AllyGrid, state.Resolver.EnemyGrid);
             BuildSide(Team.Ally, Layout.AllyGrid);
             BuildSide(Team.Enemy, Layout.EnemyGrid);
@@ -190,6 +196,7 @@ namespace ProjectVoid.View
         public UnitView ViewFor(Unit unit) => _views.TryGetValue(unit, out UnitView view) ? view : null;
 
         public TileState GetTileState(Team team, Vector2Int cell) => _tileStates[(team, cell)];
+        public Renderer TileRenderer(Team team, Vector2Int cell) => _tiles[(team, cell)];
 
         public TextMeshPro HintLabel(Team team, Vector2Int cell) => _hints[(team, cell)];
 
@@ -336,22 +343,25 @@ namespace ProjectVoid.View
         {
             _tileStates[(team, cell)] = state;
             Material material = _tiles[(team, cell)].sharedMaterial;
-            Color baseColor = team == Team.Ally ? AllyTileColor : EnemyTileColor;
+            Color baseColor = TileTexture(team) != null ? TexturedTileTint : team == Team.Ally ? AllyTileColor : EnemyTileColor;
             Color albedo = baseColor;
             Color emission = Color.black;
+            // 발광은 판 무늬가 비칠 만큼만. 빈 칸도 바닥 구멍처럼 꺼지지 않게 조금만 어둡게.
             switch (state)
             {
-                case TileState.Empty: albedo = Darkened(baseColor, 0.45f); break;
-                case TileState.Current: emission = CurrentEmission * 0.8f; break;
-                case TileState.Valid: emission = ValidEmission * 0.8f; break;
+                case TileState.Empty: albedo = Darkened(baseColor, 0.2f); break;
+                case TileState.Current: emission = CurrentEmission * 0.4f; break;
+                case TileState.Valid: emission = ValidEmission * 0.4f; break;
                 case TileState.Invalid: albedo = Darkened(baseColor, 0.6f); break;
-                case TileState.Movable: emission = MoveEmission * 0.6f; break;
-                case TileState.ShapeHit: emission = ShapeHitEmission * 1.0f; break;
-                case TileState.ShapeOut: emission = ShapeOutEmission * 0.8f; break;
+                case TileState.Movable: emission = MoveEmission * 0.35f; break;
+                case TileState.ShapeHit: emission = ShapeHitEmission * 0.45f; break;
+                case TileState.ShapeOut: emission = ShapeOutEmission * 0.4f; break;
             }
             material.SetColor(BaseColorId, albedo);
             material.SetColor(EmissionColorId, emission);
         }
+
+        private Texture2D TileTexture(Team team) => team == Team.Ally ? _allyTileTexture : _enemyTileTexture;
 
         // Godot Color.darkened: 검정 쪽으로 amount 만큼.
         private static Color Darkened(Color color, float amount)
@@ -374,6 +384,10 @@ namespace ProjectVoid.View
                     var renderer = tile.GetComponent<Renderer>();
                     // 타일마다 색이 달라지므로 머티리얼을 복사해 쓴다.
                     renderer.sharedMaterial = new Material(_assets.tileMaterial);
+                    if (TileTexture(team) != null)
+                    {
+                        renderer.sharedMaterial.mainTexture = TileTexture(team);
+                    }
                     Tag(tile.AddComponent<CellTag>(), team, cell);
 
                     var hintObject = new GameObject($"Hint {team} {col},{row}");

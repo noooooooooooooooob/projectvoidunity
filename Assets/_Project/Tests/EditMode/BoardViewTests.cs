@@ -19,7 +19,7 @@ namespace ProjectVoid.Tests
             Make.Cleanup();
         }
 
-        private (BattleState state, Board3D board) BuildBoard()
+        private (BattleState state, Board3D board) BuildBoard(Texture2D allyTexture = null, Texture2D enemyTexture = null)
         {
             var encounter = Make.Encounter(new Vector2Int(3, 3), new Vector2Int(2, 2),
                 new[] { Make.Place(Make.Ally("a", maxHp: 20, speed: 5, deck: new[] { Make.Card("c", damage: 1), Make.Card("c2", damage: 1), Make.Card("c3", damage: 1), Make.Card("c4", damage: 1) }), 0, 1) },
@@ -27,7 +27,7 @@ namespace ProjectVoid.Tests
             BattleState state = Make.State(encounter, 3);
             _root = new GameObject("BoardTestRoot");
             var board = _root.AddComponent<Board3D>();
-            board.Build(state, TestAssets.Load());
+            board.Build(state, TestAssets.Load(), allyTexture, enemyTexture);
             return (state, board);
         }
 
@@ -146,6 +146,61 @@ namespace ProjectVoid.Tests
             Assert.AreEqual(board.Layout.CellPosition(Team.Ally, new Vector2Int(1, 1)), board.ViewFor(ally).HomePosition);
             Assert.AreEqual(Board3D.TileState.Empty, board.GetTileState(Team.Ally, new Vector2Int(0, 1)));
             Assert.AreEqual(Board3D.TileState.Current, board.GetTileState(Team.Ally, new Vector2Int(1, 1)));
+        }
+
+        private static Color BaseColorOf(Board3D board, Team team, Vector2Int cell)
+            => board.TileRenderer(team, cell).sharedMaterial.GetColor("_BaseColor");
+
+        // 무늬 없는 회색 판이 바닥에 붙인 UI 처럼 보였다. 아군은 콘크리트, 적은 금속 패널 그림을 입힌다.
+        [Test]
+        public void TilesShowTheirSideTexture()
+        {
+            var ally = new Texture2D(4, 4);
+            var enemy = new Texture2D(4, 4);
+            try
+            {
+                (_, Board3D board) = BuildBoard(ally, enemy);
+                Assert.AreSame(ally, board.TileRenderer(Team.Ally, Vector2Int.zero).sharedMaterial.mainTexture);
+                Assert.AreSame(enemy, board.TileRenderer(Team.Enemy, Vector2Int.zero).sharedMaterial.mainTexture);
+                Assert.Greater(BaseColorOf(board, Team.Enemy, new Vector2Int(0, 0)).maxColorComponent, 0.7f, "textured tiles are not tinted dark");
+            }
+            finally
+            {
+                Object.DestroyImmediate(ally);
+                Object.DestroyImmediate(enemy);
+            }
+        }
+
+        // 현재 턴 칸이 노랗게 꽉 칠해져 판 무늬를 덮었다. 은은한 발광이어야 한다.
+        [Test]
+        public void HighlightGlowsWithoutHidingTheTile()
+        {
+            (BattleState state, Board3D board) = BuildBoard();
+            state.StartBattle();
+            board.SyncFromState(state);
+            var current = new Vector2Int(0, 1);
+            Material material = board.TileRenderer(Team.Ally, current).sharedMaterial;
+            Color emission = material.GetColor("_EmissionColor");
+            Assert.Greater(emission.maxColorComponent, 0f, "still glows");
+            Assert.LessOrEqual(emission.maxColorComponent, 0.45f, "faint enough to keep the texture visible");
+        }
+
+        // 빈 칸이 거의 검게 꺼져 바닥 구멍처럼 보였다.
+        [Test]
+        public void EmptyTileIsOnlySlightlyDimmed()
+        {
+            (BattleState state, Board3D board) = BuildBoard();
+            state.StartBattle();
+            board.SyncFromState(state);
+            Color empty = BaseColorOf(board, Team.Enemy, new Vector2Int(1, 0));
+            Color occupied = BaseColorOf(board, Team.Enemy, new Vector2Int(0, 0));
+            Assert.GreaterOrEqual(empty.maxColorComponent, occupied.maxColorComponent * 0.75f);
+        }
+
+        [Test]
+        public void TilesAreSlabsThickEnoughToReadAsPlates()
+        {
+            Assert.GreaterOrEqual(Board3D.TileThickness, 0.08f);
         }
     }
 }
