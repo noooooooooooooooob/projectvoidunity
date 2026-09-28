@@ -1,0 +1,41 @@
+{
+    "asset": "351b1e787413cba40b233aa07b452f23",
+    "fileName": "01a0e8df-c847-7826-b9e2-c1c19f371518.mp4",
+    "prompt": "Pixel art game character reaction animation. The large character stays in place facing right, leans back and wobbles as if bumped from the right, then settles back into the ready stance. Static camera, no zoom, same framing, plain background, character does not walk.",
+    "negativePrompt": "",
+    "model": "video-kling-v3-i2v-standard",
+    "modelName": "Kling V3 I2V Standard",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Spritesheet",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 9,
+                "doodle": [],
+                "label": "First",
+                "strength": 1.0,
+                "invertStrength": false,
+                "assetReferenceGuid": "744713f2d65e5d04ab5a656bbf2a43a3",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 0,
+        "height": 0
+    },
+    "spriteSheet": true,
+    "duration": 5.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "asset": "d58367ab5968f1948b54ba8d8504344a",
+    "fileName": "01a0e8d1-a312-7a5b-92f8-6b0d955beb23.mp4",
+    "prompt": "Pixel art character attack animation. The sentry stays in place facing right, raises and aims the crossbow toward the right, fires one bolt with a recoil, then returns to the ready stance. Static camera, no zoom, no camera movement, same framing, plain background, character does not walk or leave the frame.",
+    "negativePrompt": "",
+    "model": "video-kling-v3-i2v-standard",
+    "modelName": "Kling V3 I2V Standard",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Spritesheet",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 9,
+                "doodle": [],
+                "label": "First",
+                "strength": 1.0,
+                "invertStrength": false,
+                "assetReferenceGuid": "10f0475dfa095bb49a5180f78a7b3466",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 0,
+        "height": 0
+    },
+    "spriteSheet": true,
+    "duration": 5.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

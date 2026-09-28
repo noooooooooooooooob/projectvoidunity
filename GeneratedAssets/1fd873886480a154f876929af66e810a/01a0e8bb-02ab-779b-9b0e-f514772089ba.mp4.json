@@ -1,0 +1,50 @@
+{
+    "asset": "1fd873886480a154f876929af66e810a",
+    "fileName": "01a0e8bb-02ab-779b-9b0e-f514772089ba.mp4",
+    "prompt": "Pixel art character idle animation loop. The big brute with a wooden club stands in place facing right, heavy breathing, shoulders rise and fall, club held low. Static camera, no zoom, no camera movement, same framing, plain background, character stays centered and does not walk.",
+    "negativePrompt": "",
+    "model": "video-kling-v3-i2v-standard",
+    "modelName": "Kling V3 I2V Standard",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Spritesheet",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 9,
+                "doodle": [],
+                "label": "First",
+                "strength": 1.0,
+                "invertStrength": false,
+                "assetReferenceGuid": "744713f2d65e5d04ab5a656bbf2a43a3",
+                "unlabeledIndex": -1
+            },
+            {
+                "doodleReferenceType": 10,
+                "doodle": [],
+                "label": "Last",
+                "strength": 1.0,
+                "invertStrength": false,
+                "assetReferenceGuid": "744713f2d65e5d04ab5a656bbf2a43a3",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 0,
+        "height": 0
+    },
+    "spriteSheet": true,
+    "duration": 5.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

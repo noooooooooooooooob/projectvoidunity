@@ -1,0 +1,31 @@
+{
+    "asset": "cf57eef8248f21843ae0d1f7120d531b",
+    "fileName": "01a0e894-ff4e-7279-910b-6a05cef7c206.png",
+    "prompt": "Top-down orthographic view of a single square steel floor hatch panel filling the entire image edge to edge, dark gunmetal grey, recessed inner square plate with a raised frame border, small bolts in the corners, light rust and scuffs, flat even lighting, no shadows, no perspective, game texture, dark gritty anime game style like Path to Nowhere",
+    "negativePrompt": "",
+    "model": "gpt-image-1-5",
+    "modelName": "GPT Image 1.5",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

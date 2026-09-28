@@ -1,0 +1,50 @@
+{
+    "asset": "84fab7f1bb4da9244b2ff288b2e1df5c",
+    "fileName": "01a0e8bc-8a86-7a21-836f-cd89dd635cf5.mp4",
+    "prompt": "Pixel art character idle animation loop. The masked black-clad stalker with blades stands in place facing right, breathing, subtle crouched sway, blades held ready. Static camera, no zoom, no camera movement, same framing, plain background, character stays centered and does not walk.",
+    "negativePrompt": "",
+    "model": "video-kling-v3-i2v-standard",
+    "modelName": "Kling V3 I2V Standard",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Spritesheet",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 9,
+                "doodle": [],
+                "label": "First",
+                "strength": 1.0,
+                "invertStrength": false,
+                "assetReferenceGuid": "e19d8eff25c61be40820ee6757b2dc39",
+                "unlabeledIndex": -1
+            },
+            {
+                "doodleReferenceType": 10,
+                "doodle": [],
+                "label": "Last",
+                "strength": 1.0,
+                "invertStrength": false,
+                "assetReferenceGuid": "e19d8eff25c61be40820ee6757b2dc39",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 0,
+        "height": 0
+    },
+    "spriteSheet": true,
+    "duration": 5.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "asset": "729116e47db0ab943885d6f8a427ae3f",
+    "fileName": "01a0e894-7dee-76d7-8e78-1d65c6d75f49.png",
+    "prompt": "Top-down orthographic view of a single square concrete floor slab filling the entire image edge to edge, light grey weathered industrial concrete, subtle scratches and faint stains, thin worn darker bevel along all four edges, flat even lighting, no shadows, no perspective, game texture, dark gritty anime game style like Path to Nowhere",
+    "negativePrompt": "",
+    "model": "gpt-image-1-5",
+    "modelName": "GPT Image 1.5",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

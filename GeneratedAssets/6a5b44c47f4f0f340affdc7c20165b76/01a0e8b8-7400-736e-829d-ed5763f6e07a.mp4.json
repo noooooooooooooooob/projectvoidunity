@@ -1,0 +1,50 @@
+{
+    "asset": "6a5b44c47f4f0f340affdc7c20165b76",
+    "fileName": "01a0e8b8-7400-736e-829d-ed5763f6e07a.mp4",
+    "prompt": "Pixel art character idle animation loop. The armored knight with sword and shield stands in place facing right, breathing, subtle body sway, shield and sword held ready. Static camera, no zoom, no camera movement, same framing, plain background, character stays centered and does not walk.",
+    "negativePrompt": "",
+    "model": "video-kling-v3-i2v-standard",
+    "modelName": "Kling V3 I2V Standard",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Spritesheet",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 9,
+                "doodle": [],
+                "label": "First",
+                "strength": 1.0,
+                "invertStrength": false,
+                "assetReferenceGuid": "d7f02c2891e9c1047a7d12c608cb5e48",
+                "unlabeledIndex": -1
+            },
+            {
+                "doodleReferenceType": 10,
+                "doodle": [],
+                "label": "Last",
+                "strength": 1.0,
+                "invertStrength": false,
+                "assetReferenceGuid": "d7f02c2891e9c1047a7d12c608cb5e48",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 0,
+        "height": 0
+    },
+    "spriteSheet": true,
+    "duration": 5.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

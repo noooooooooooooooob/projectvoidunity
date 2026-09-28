@@ -1,0 +1,41 @@
+{
+    "asset": "deacdc2d18315c14d99eeab9750c8351",
+    "fileName": "01a0e8d5-250d-7c22-8818-cb02922cc3d7.mp4",
+    "prompt": "Pixel art character getting hit animation. The archer stays in place facing right, gets struck from the right, flinches and recoils backward, then recovers to the ready stance. Static camera, no zoom, no camera movement, same framing, plain background, character does not walk or leave the frame.",
+    "negativePrompt": "",
+    "model": "video-kling-v3-i2v-standard",
+    "modelName": "Kling V3 I2V Standard",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Spritesheet",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 9,
+                "doodle": [],
+                "label": "First",
+                "strength": 1.0,
+                "invertStrength": false,
+                "assetReferenceGuid": "6c7f59a92ebc12d4e9795784b2f6624e",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 0,
+        "height": 0
+    },
+    "spriteSheet": true,
+    "duration": 5.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

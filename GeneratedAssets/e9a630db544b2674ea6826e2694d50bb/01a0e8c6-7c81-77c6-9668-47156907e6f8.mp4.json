@@ -1,0 +1,41 @@
+{
+    "asset": "e9a630db544b2674ea6826e2694d50bb",
+    "fileName": "01a0e8c6-7c81-77c6-9668-47156907e6f8.mp4",
+    "prompt": "Pixel art character attack animation. The masked black-clad stalker stays in place facing right, coils back, then performs one fast cross slash with both blades toward the right, then returns to the ready stance. Static camera, no zoom, no camera movement, same framing, plain background, character does not walk or leave the frame.",
+    "negativePrompt": "",
+    "model": "video-kling-v3-i2v-standard",
+    "modelName": "Kling V3 I2V Standard",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Spritesheet",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 9,
+                "doodle": [],
+                "label": "First",
+                "strength": 1.0,
+                "invertStrength": false,
+                "assetReferenceGuid": "e19d8eff25c61be40820ee6757b2dc39",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 0,
+        "height": 0
+    },
+    "spriteSheet": true,
+    "duration": 5.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

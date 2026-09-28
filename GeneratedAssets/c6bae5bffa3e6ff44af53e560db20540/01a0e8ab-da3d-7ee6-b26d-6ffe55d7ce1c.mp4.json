@@ -1,0 +1,50 @@
+{
+    "asset": "c6bae5bffa3e6ff44af53e560db20540",
+    "fileName": "01a0e8ab-da3d-7ee6-b26d-6ffe55d7ce1c.mp4",
+    "prompt": "Pixel art character idle animation loop. The hooded scout stands in place facing right, breathing gently, slight shoulder rise and fall, daggers held low, cloak hem sways a little. Static camera, no zoom, no camera movement, same framing, plain background, character stays centered and does not walk.",
+    "negativePrompt": "",
+    "model": "video-kling-v3-i2v-standard",
+    "modelName": "Kling V3 I2V Standard",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Spritesheet",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 9,
+                "doodle": [],
+                "label": "First",
+                "strength": 1.0,
+                "invertStrength": false,
+                "assetReferenceGuid": "5a4a5238fa83ec043b123c02829d8732",
+                "unlabeledIndex": -1
+            },
+            {
+                "doodleReferenceType": 10,
+                "doodle": [],
+                "label": "Last",
+                "strength": 1.0,
+                "invertStrength": false,
+                "assetReferenceGuid": "5a4a5238fa83ec043b123c02829d8732",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 0,
+        "height": 0
+    },
+    "spriteSheet": true,
+    "duration": 5.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}
