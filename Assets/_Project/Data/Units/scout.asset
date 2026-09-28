@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8c4515f84d4ec843a26efb3a62ec8f5, type: 3}
+  m_Name: scout
+  m_EditorClassIdentifier: ProjectVoid.Combat::ProjectVoid.Combat.AllyData
+  id: scout
+  displayName: "\uC815\uCC30\uBCD1"
+  maxHp: 22
+  speed: 16
+  sprite: {fileID: 0}
+  maxSp: 3
+  deck:
+  - {fileID: 11400000, guid: afc37595a00e600419c5da4dab7ab610, type: 2}
+  - {fileID: 11400000, guid: afc37595a00e600419c5da4dab7ab610, type: 2}
+  - {fileID: 11400000, guid: 91109f735f3479d419b889cff47e5843, type: 2}
+  - {fileID: 11400000, guid: 91109f735f3479d419b889cff47e5843, type: 2}
+  - {fileID: 11400000, guid: effa89ae50375204a82fa99cb86f11f0, type: 2}
+  - {fileID: 11400000, guid: fc7f8bd4c7081fa4ab13c1a2777c2893, type: 2}

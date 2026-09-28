@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8c4515f84d4ec843a26efb3a62ec8f5, type: 3}
+  m_Name: archer
+  m_EditorClassIdentifier: ProjectVoid.Combat::ProjectVoid.Combat.AllyData
+  id: archer
+  displayName: "\uC0AC\uC218"
+  maxHp: 20
+  speed: 10
+  sprite: {fileID: 0}
+  maxSp: 3
+  deck:
+  - {fileID: 11400000, guid: 91109f735f3479d419b889cff47e5843, type: 2}
+  - {fileID: 11400000, guid: 91109f735f3479d419b889cff47e5843, type: 2}
+  - {fileID: 11400000, guid: 91109f735f3479d419b889cff47e5843, type: 2}
+  - {fileID: 11400000, guid: effa89ae50375204a82fa99cb86f11f0, type: 2}
+  - {fileID: 11400000, guid: f805a308c925b7a41b1301ee5d0957e8, type: 2}
+  - {fileID: 11400000, guid: f805a308c925b7a41b1301ee5d0957e8, type: 2}
+  - {fileID: 11400000, guid: c07ab282a38959749bc94dc0a4f51ce1, type: 2}
+  - {fileID: 11400000, guid: c07ab282a38959749bc94dc0a4f51ce1, type: 2}

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8c4515f84d4ec843a26efb3a62ec8f5, type: 3}
+  m_Name: vanguard
+  m_EditorClassIdentifier: ProjectVoid.Combat::ProjectVoid.Combat.AllyData
+  id: vanguard
+  displayName: "\uC120\uBD09"
+  maxHp: 30
+  speed: 12
+  sprite: {fileID: 0}
+  maxSp: 3
+  deck:
+  - {fileID: 11400000, guid: afc37595a00e600419c5da4dab7ab610, type: 2}
+  - {fileID: 11400000, guid: afc37595a00e600419c5da4dab7ab610, type: 2}
+  - {fileID: 11400000, guid: afc37595a00e600419c5da4dab7ab610, type: 2}
+  - {fileID: 11400000, guid: fc7f8bd4c7081fa4ab13c1a2777c2893, type: 2}
+  - {fileID: 11400000, guid: fc7f8bd4c7081fa4ab13c1a2777c2893, type: 2}
+  - {fileID: 11400000, guid: 91109f735f3479d419b889cff47e5843, type: 2}
+  - {fileID: 11400000, guid: ff0a9c60d9a6f8449b08c3adf813affd, type: 2}
+  - {fileID: 11400000, guid: ff0a9c60d9a6f8449b08c3adf813affd, type: 2}

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 989fa837ea1aebb4e8b3c2ab9b38b679, type: 3}
+  m_Name: skewer
+  m_EditorClassIdentifier: ProjectVoid.Combat::ProjectVoid.Combat.CardData
+  id: skewer
+  displayName: "\uAFF0\uB6AB\uAE30"
+  spCost: 2
+  attackType: 0
+  shape: 4
+  attackRange: 3
+  damage: 4

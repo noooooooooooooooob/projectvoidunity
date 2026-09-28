@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6368f23db8407fb43924ca2f74546de7, type: 3}
+  m_Name: skirmish
+  m_EditorClassIdentifier: ProjectVoid.Combat::ProjectVoid.Combat.EncounterData
+  allyGrid: {x: 3, y: 3}
+  enemyGrid: {x: 2, y: 2}
+  allyUnits:
+  - unitData: {fileID: 11400000, guid: 377bf1fda34326f4e8dfa6c56c2ff52b, type: 2}
+    cell: {x: 0, y: 1}
+  - unitData: {fileID: 11400000, guid: 153a248dccd5c89468152b49d4d63508, type: 2}
+    cell: {x: 2, y: 0}
+  - unitData: {fileID: 11400000, guid: 71cdd14462d7e5a4baf62ef084ba4159, type: 2}
+    cell: {x: 1, y: 2}
+  enemyUnits:
+  - unitData: {fileID: 11400000, guid: f765891bf898e884ea9c18696a189aea, type: 2}
+    cell: {x: 0, y: 0}
+  - unitData: {fileID: 11400000, guid: de0e37d394762f741accfb278a7b349a, type: 2}
+    cell: {x: 1, y: 1}
+  - unitData: {fileID: 11400000, guid: b473d662f6299dd4f812eda0aaa0d481, type: 2}
+    cell: {x: 1, y: 0}
