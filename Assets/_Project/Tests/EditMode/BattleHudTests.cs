@@ -72,6 +72,23 @@ namespace ProjectVoid.Tests
         }
 
         [Test]
+        public void DraggingShowsTheAimArrowUntilDropped()
+        {
+            BattleHud hud = NewHud();
+            Unit ally = NewUnit(0, Team.Ally);
+            hud.DrawCard(new BattleEvent(BattleEventKind.CardDrawn) { Unit = ally, Card = Make.Card("a") });
+            hud.SetInteractive(true);
+            CardButton card = hud.GetComponentsInChildren<CardButton>()[0];
+            var data = new UnityEngine.EventSystems.PointerEventData(null) { position = new Vector2(900f, 600f) };
+            Assert.IsFalse(hud.IsAiming, "no arrow before dragging");
+            card.OnBeginDrag(data);
+            card.OnDrag(data);
+            Assert.IsTrue(hud.IsAiming, "arrow follows the drag");
+            card.OnEndDrag(data);
+            Assert.IsFalse(hud.IsAiming, "arrow hidden after the drop");
+        }
+
+        [Test]
         public void DiscardHandClearsButtons()
         {
             BattleHud hud = NewHud();

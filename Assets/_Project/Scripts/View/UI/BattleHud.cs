@@ -36,6 +36,7 @@ namespace ProjectVoid.View
         private RectTransform _hand;
         private Button _moveButton;
         private Button _endTurnButton;
+        private AimArrow _arrow;
         private GameObject _banner;
         private TextMeshProUGUI _bannerLabel;
         private bool _interactive;
@@ -54,6 +55,7 @@ namespace ProjectVoid.View
         public bool BannerVisible => _banner.activeSelf;
         public string BannerText => _bannerLabel.text;
         public bool DragActiveThisFrame => _dragging || _dragEndFrame == Time.frameCount;
+        public bool IsAiming => _arrow.IsAiming;
 
         public bool IsCardAffordable(int index) => _cards[index].Affordable;
 
@@ -89,6 +91,12 @@ namespace ProjectVoid.View
             Anchor(_spLabel.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-440f, 20f), new Vector2(-300f, 170f));
             _moveButton = MakeButton(root, "이동", new Vector2(-290f, 100f), new Vector2(-160f, 160f), OnMoveClicked);
             _endTurnButton = MakeButton(root, "차례 종료", new Vector2(-290f, 20f), new Vector2(-24f, 90f), () => EndTurnPressed?.Invoke());
+
+            var arrowObject = new GameObject("AimArrow", typeof(RectTransform));
+            var arrowRect = (RectTransform)arrowObject.transform;
+            arrowRect.SetParent(root, false);
+            Anchor(arrowRect, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            _arrow = arrowObject.AddComponent<AimArrow>();
 
             _banner = BuildBanner(root);
             _banner.SetActive(false);
@@ -264,13 +272,16 @@ namespace ProjectVoid.View
                 _dragging = true;
                 OnCardClicked(dragged);
             };
-            button.Dragged += (_, position) => CardDragMoved?.Invoke(position);
+            button.Dragged += OnCardDragged;
             button.DragEnded += OnCardDragEnded;
             _cards.Add(button);
         }
 
         private void ClearHand()
         {
+            // 끄던 카드가 사라지면 화살표도 같이 치운다.
+            _dragging = false;
+            _arrow.Hide();
             foreach (CardButton card in _cards)
             {
                 DestroySafe(card.gameObject);
@@ -307,6 +318,16 @@ namespace ProjectVoid.View
             CardSelected?.Invoke(index);
         }
 
+        private void OnCardDragged(CardButton button, Vector2 position)
+        {
+            if (!_dragging)
+            {
+                return;
+            }
+            _arrow.Show(button.AimOrigin, position);
+            CardDragMoved?.Invoke(position);
+        }
+
         private void OnCardDragEnded(CardButton button, Vector2 position)
         {
             if (!_dragging)
@@ -314,6 +335,7 @@ namespace ProjectVoid.View
                 return;
             }
             _dragging = false;
+            _arrow.Hide();
             _dragEndFrame = Time.frameCount;
             CardDropped?.Invoke(_cards.IndexOf(button), position);
         }

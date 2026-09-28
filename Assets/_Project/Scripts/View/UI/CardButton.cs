@@ -31,6 +31,17 @@ namespace ProjectVoid.View
         public bool Interactable { get; set; } = true;
         public bool Affordable => _affordable;
 
+        /// <summary>조준 화살표가 시작하는 카드 윗면 중앙의 화면 좌표 (Screen Space Overlay 기준).</summary>
+        public Vector2 AimOrigin
+        {
+            get
+            {
+                var corners = new Vector3[4];
+                _face.GetWorldCorners(corners);
+                return RectTransformUtility.WorldToScreenPoint(null, (corners[1] + corners[2]) / 2f);
+            }
+        }
+
         public void Setup(CardData card, ViewAssets assets)
         {
             Card = card;
