@@ -126,6 +126,46 @@ namespace ProjectVoid.Tests
             Assert.Less(Quaternion.Angle(expected, prop.transform.rotation), 0.1f, "yaw is applied on top of the model's own rotation");
         }
 
+        // 벽 텍스처 아래쪽에 그려진 바닥 줄 때문에 바닥이 두 번 보였다.
+        [Test]
+        public void WallTextureSkipsItsPaintedFloorStrip()
+        {
+            Material wall = Build(_ground, _wall).BackWall.GetComponent<Renderer>().sharedMaterial;
+            Assert.AreEqual(BattleEnvironment.WallFloorCrop, wall.mainTextureOffset.y, 1e-4f);
+            Assert.AreEqual(1f - BattleEnvironment.WallFloorCrop, wall.mainTextureScale.y, 1e-4f);
+        }
+
+        // 실내는 천장 쪽이 어둡다. 벽 앞에 위로 갈수록 짙어지는 그늘을 덮는다.
+        [Test]
+        public void WallsDarkenTowardTheCeiling()
+        {
+            BattleEnvironment env = Build(_ground, _wall);
+            Assert.AreEqual(3, env.WallShades.Count, "back and both side walls");
+            SpriteRenderer shade = env.WallShades[0];
+            Texture2D gradient = shade.sprite.texture;
+            Assert.Greater(gradient.GetPixel(0, gradient.height - 1).a, gradient.GetPixel(0, 0).a, "darker at the top");
+            // 스프라이트 경계에는 두께 여유가 붙으므로 위치로 비교한다.
+            Assert.Less(shade.transform.position.z, env.BackWall.transform.position.z, "in front of the back wall");
+            Assert.AreEqual(env.BackWall.GetComponent<Renderer>().bounds.size.x, shade.bounds.size.x, 0.01f, "covers the whole wall width");
+        }
+
+        [Test]
+        public void LightShaftsAreVisibleBeamsWithDust()
+        {
+            BattleEnvironment env = Build(_ground, _wall);
+            Light[] lights = env.GetComponentsInChildren<Light>();
+            Assert.AreEqual(lights.Length, env.LightShafts.Count, "one visible beam per light");
+            foreach (SpriteRenderer beam in env.LightShafts)
+            {
+                Assert.LessOrEqual(beam.color.a, 0.07f, "beam is faint haze and must not hide units behind it");
+                // 가장자리가 딱딱한 직사각형으로 보였다. 좌우로 부드럽게 사라져야 한다.
+                Texture2D texture = beam.sprite.texture;
+                int top = texture.height - 1;
+                Assert.Less(texture.GetPixel(0, top).a, texture.GetPixel(texture.width / 2, top).a * 0.2f, "soft sides");
+            }
+            Assert.GreaterOrEqual(env.GetComponentsInChildren<ParticleSystem>().Length, 1, "dust floats in the light");
+        }
+
         // 벽이 고르게 밝아 평면적으로 보였다. 비스듬한 스포트라이트로 바닥에 빛 조각과 명암을 만든다.
         [Test]
         public void SpotLightsCastPoolsOfLight()

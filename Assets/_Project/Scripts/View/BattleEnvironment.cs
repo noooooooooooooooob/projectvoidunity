@@ -24,6 +24,13 @@ namespace ProjectVoid.View
         public const float BackWallGap = 2f;
         public const float SideWallGap = 3f;
         public static readonly Color WallTint = new Color(0.8f, 0.8f, 0.85f);
+        // 벽 텍스처 아래쪽에 그려진 바닥 줄을 잘라낸다 (바닥이 두 번 보이지 않게).
+        public const float WallFloorCrop = 0.12f;
+        // 벽 위로 갈수록 어두워지는 그늘의 최대 불투명도 (천장 아래 어둠).
+        public const float WallShadeAlpha = 0.85f;
+        // 빛기둥은 뒤의 유닛을 가리지 않을 만큼만 옅게.
+        private static readonly Color BeamColor = new Color(1f, 0.9f, 0.7f, 0.06f);
+        private static readonly Color DustColor = new Color(1f, 0.92f, 0.8f, 0.3f);
         private static readonly Color LightColor = new Color(1f, 0.9f, 0.75f);
 
         public GameObject Ground { get; private set; }
@@ -31,6 +38,8 @@ namespace ProjectVoid.View
         public GameObject LeftWall { get; private set; }
         public GameObject RightWall { get; private set; }
         public List<GameObject> Props { get; } = new List<GameObject>();
+        public List<SpriteRenderer> WallShades { get; } = new List<SpriteRenderer>();
+        public List<SpriteRenderer> LightShafts { get; } = new List<SpriteRenderer>();
 
         /// <summary>인카운터에 바닥·벽 텍스처와 소품이 하나도 없으면 null.</summary>
         public static BattleEnvironment Build(Transform parent, BoardLayout layout, EncounterData encounter, Material baseMaterial)
@@ -65,17 +74,17 @@ namespace ProjectVoid.View
                 float frontZ = center.z - GroundDepth / 2f;
                 float sideLength = backZ - frontZ;
 
-                environment.BackWall = Wall("BackWall", root.transform, encounter.wallTexture, baseMaterial,
+                environment.BackWall = environment.Wall("BackWall", root.transform, encounter.wallTexture, baseMaterial,
                     new Vector3(center.x, floorY, backZ), Quaternion.identity, rightX - leftX);
                 // 옆벽은 안쪽(보드 쪽)을 향하게 돌린다.
-                environment.LeftWall = Wall("LeftWall", root.transform, encounter.wallTexture, baseMaterial,
+                environment.LeftWall = environment.Wall("LeftWall", root.transform, encounter.wallTexture, baseMaterial,
                     new Vector3(leftX, floorY, frontZ + sideLength / 2f), Quaternion.Euler(0f, -90f, 0f), sideLength);
-                environment.RightWall = Wall("RightWall", root.transform, encounter.wallTexture, baseMaterial,
+                environment.RightWall = environment.Wall("RightWall", root.transform, encounter.wallTexture, baseMaterial,
                     new Vector3(rightX, floorY, frontZ + sideLength / 2f), Quaternion.Euler(0f, 90f, 0f), sideLength);
 
                 // 뒷벽 위쪽 창문에서 비스듬히 들어오는 빛줄기 두 개 (레퍼런스의 바닥 빛 조각).
-                SpotLight(root.transform, new Vector3(leftX + (rightX - leftX) * 0.3f, WallHeight, backZ - 0.5f), center + new Vector3(-1.5f, 0f, 0.5f));
-                SpotLight(root.transform, new Vector3(leftX + (rightX - leftX) * 0.75f, WallHeight, backZ - 0.5f), center + new Vector3(2.5f, 0f, -0.5f));
+                environment.LightShaft(root.transform, new Vector3(leftX + (rightX - leftX) * 0.3f, WallHeight, backZ - 0.5f), center + new Vector3(-1.5f, floorY, 0.5f));
+                environment.LightShaft(root.transform, new Vector3(leftX + (rightX - leftX) * 0.75f, WallHeight, backZ - 0.5f), center + new Vector3(2.5f, floorY, -0.5f));
             }
 
             foreach (PropPlacement placement in encounter.props)
@@ -129,15 +138,111 @@ namespace ProjectVoid.View
             return bounds;
         }
 
-        private static GameObject Wall(string name, Transform parent, Texture2D texture, Material baseMaterial,
+        private GameObject Wall(string name, Transform parent, Texture2D texture, Material baseMaterial,
             Vector3 bottomCenter, Quaternion rotation, float length)
         {
             GameObject wall = Plane(name, parent, texture, baseMaterial, WallTint);
             wall.transform.rotation = rotation;
             wall.transform.position = bottomCenter + Vector3.up * (WallHeight / 2f);
             wall.transform.localScale = new Vector3(length, WallHeight, 1f);
-            wall.GetComponent<Renderer>().sharedMaterial.mainTextureScale = new Vector2(length / WallTileSize, WallHeight / WallTileSize);
+            Material material = wall.GetComponent<Renderer>().sharedMaterial;
+            material.mainTextureScale = new Vector2(length / WallTileSize, WallHeight / WallTileSize * (1f - WallFloorCrop));
+            material.mainTextureOffset = new Vector2(0f, WallFloorCrop);
+
+            // 벽 바로 앞(보드 쪽)에 위로 갈수록 짙어지는 그늘을 덮어 천장 아래 어둠을 흉내 낸다.
+            var shadeObject = new GameObject(name + "Shade");
+            shadeObject.transform.SetParent(parent, false);
+            shadeObject.transform.rotation = rotation;
+            shadeObject.transform.position = wall.transform.position - wall.transform.forward * 0.02f;
+            shadeObject.transform.localScale = new Vector3(length, WallHeight, 1f);
+            var shade = shadeObject.AddComponent<SpriteRenderer>();
+            shade.sprite = GradientSprite(t => Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.35f, 1f, t)) * WallShadeAlpha);
+            shade.color = Color.black;
+            WallShades.Add(shade);
             return wall;
+        }
+
+        private void LightShaft(Transform parent, Vector3 position, Vector3 target)
+        {
+            SpotLight(parent, position, target);
+
+            // 빛기둥: 빛에서 바닥까지 이어지는 옅은 판. 빛 쪽이 진하고 바닥 쪽으로 옅어진다.
+            Vector3 up = (position - target).normalized;
+            var beamObject = new GameObject("LightBeam");
+            beamObject.transform.SetParent(parent, false);
+            beamObject.transform.position = (position + target) / 2f;
+            Vector3 facing = Vector3.ProjectOnPlane(Vector3.forward, up).normalized;
+            beamObject.transform.rotation = Quaternion.LookRotation(facing, up);
+            beamObject.transform.localScale = new Vector3(1.8f, Vector3.Distance(position, target), 1f);
+            var beam = beamObject.AddComponent<SpriteRenderer>();
+            // 좌우로 부드럽게 사라져야 딱딱한 직사각형으로 보이지 않는다.
+            beam.sprite = GradientSprite(t => Mathf.Lerp(0.15f, 1f, t), softSides: true);
+            beam.color = BeamColor;
+            LightShafts.Add(beam);
+
+            Dust(parent, target + Vector3.up * 1.5f);
+        }
+
+        // 빛 속에 천천히 떠다니는 먼지.
+        private static void Dust(Transform parent, Vector3 center)
+        {
+            var dustObject = new GameObject("Dust");
+            dustObject.transform.SetParent(parent, false);
+            dustObject.transform.position = center;
+            var particles = dustObject.AddComponent<ParticleSystem>();
+            ParticleSystem.MainModule main = particles.main;
+            main.startLifetime = 6f;
+            main.startSpeed = 0.05f;
+            main.startSize = 0.02f;
+            main.startColor = DustColor;
+            main.maxParticles = 60;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            ParticleSystem.EmissionModule emission = particles.emission;
+            emission.rateOverTime = 8f;
+            ParticleSystem.ShapeModule shape = particles.shape;
+            shape.shapeType = ParticleSystemShapeType.Box;
+            shape.scale = new Vector3(2f, 3f, 2f);
+            var particleRenderer = dustObject.GetComponent<ParticleSystemRenderer>();
+            particleRenderer.sharedMaterial = DustMaterial();
+        }
+
+        private static Material _dustMaterial;
+
+        private static Material DustMaterial()
+        {
+            if (_dustMaterial != null)
+            {
+                return _dustMaterial;
+            }
+            _dustMaterial = new Material(Shader.Find("Universal Render Pipeline/Particles/Unlit"));
+            // 반투명으로 섞는다 (기본값은 불투명 사각형).
+            _dustMaterial.SetFloat("_Surface", 1f);
+            _dustMaterial.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _dustMaterial.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.One);
+            _dustMaterial.SetFloat("_ZWrite", 0f);
+            _dustMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            _dustMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            return _dustMaterial;
+        }
+
+        /// <summary>세로 그라데이션 흰 스프라이트 (1 유닛 정사각). alphaAt(0=아래..1=위) 로 알파를 정한다. 색은 SpriteRenderer.color 로 곱한다.</summary>
+        private static Sprite GradientSprite(System.Func<float, float> alphaAt, bool softSides = false)
+        {
+            // 정사각이어야 스프라이트가 1×1 유닛이 되어 scale 이 곧 월드 크기가 된다.
+            const int size = 64;
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
+            for (int y = 0; y < size; y++)
+            {
+                float alpha = alphaAt(y / (size - 1f));
+                for (int x = 0; x < size; x++)
+                {
+                    // 가운데 1 → 가장자리 0 으로 매끄럽게 줄어드는 가로 감쇠.
+                    float side = softSides ? Mathf.SmoothStep(0f, 1f, 1f - Mathf.Abs(x / (size - 1f) * 2f - 1f)) : 1f;
+                    texture.SetPixel(x, y, new Color(1f, 1f, 1f, alpha * side));
+                }
+            }
+            texture.Apply();
+            return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
         }
 
         private static void SpotLight(Transform parent, Vector3 position, Vector3 target)

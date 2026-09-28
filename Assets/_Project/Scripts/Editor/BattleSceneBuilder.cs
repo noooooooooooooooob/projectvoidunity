@@ -26,6 +26,18 @@ namespace ProjectVoid.EditorTools
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.08f, 0.08f, 0.11f);
             cameraObject.AddComponent<AudioListener>();
+            cameraObject.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>().renderPostProcessing = true;
+
+            var volumeObject = new GameObject("Atmosphere Volume");
+            var volume = volumeObject.AddComponent<UnityEngine.Rendering.Volume>();
+            volume.isGlobal = true;
+            volume.sharedProfile = AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.VolumeProfile>(AtmosphereSetup.ProfilePath);
+
+            // 멀수록 어둡게 가라앉아 뒷벽이 깊어 보인다.
+            RenderSettings.fog = true;
+            RenderSettings.fogMode = FogMode.Exponential;
+            RenderSettings.fogDensity = 0.025f;
+            RenderSettings.fogColor = new Color(0.06f, 0.065f, 0.08f);
 
             var lightObject = new GameObject("Directional Light");
             var light = lightObject.AddComponent<Light>();
