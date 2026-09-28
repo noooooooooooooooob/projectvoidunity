@@ -74,6 +74,8 @@ namespace ProjectVoid.Tests
             return encounter;
         }
 
+        public static BattleState State(EncounterData encounter, int seed) => new BattleState(encounter, new Rng(seed));
+
         public static void Cleanup()
         {
             foreach (Object asset in Created)
