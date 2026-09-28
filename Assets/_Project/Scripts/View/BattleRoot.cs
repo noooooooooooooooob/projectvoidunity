@@ -56,6 +56,7 @@ namespace ProjectVoid.View
             Board.transform.SetParent(transform, false);
             Board.Build(State, assets);
             Board.SyncFromState(State);
+            BattleEnvironment.Build(transform, Board.Layout, encounter, assets.tileMaterial);
 
             Hud = new GameObject("Hud", typeof(RectTransform)).AddComponent<BattleHud>();
             Hud.transform.SetParent(transform, false);

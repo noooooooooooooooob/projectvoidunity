@@ -11,5 +11,8 @@ namespace ProjectVoid.Combat
         public Vector2Int enemyGrid = new Vector2Int(3, 3);
         public List<UnitPlacement> allyUnits = new List<UnitPlacement>();
         public List<UnitPlacement> enemyUnits = new List<UnitPlacement>();
+        // 표현용 배경. 비워 두면 단색 배경. groundTexture 는 반복되는 바닥, backdrop 은 보드 뒤에 세우는 그림.
+        public Texture2D groundTexture;
+        public Texture2D backdrop;
     }
 }
