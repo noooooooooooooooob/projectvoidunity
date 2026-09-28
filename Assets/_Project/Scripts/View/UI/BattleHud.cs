@@ -345,7 +345,8 @@ namespace ProjectVoid.View
         private ScrollRect BuildLog(RectTransform root)
         {
             RectTransform frame = Panel(root, "Log", new Color(0f, 0f, 0f, 0.35f));
-            Anchor(frame, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(16f, 260f), new Vector2(536f, -80f));
+            // 폭 360: 1920 기준 아군 보드 왼쪽 끝(약 x 390)을 가리지 않는다.
+            Anchor(frame, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(16f, 260f), new Vector2(360f, -80f));
             var scroll = frame.gameObject.AddComponent<ScrollRect>();
             frame.gameObject.AddComponent<RectMask2D>();
             scroll.horizontal = false;
