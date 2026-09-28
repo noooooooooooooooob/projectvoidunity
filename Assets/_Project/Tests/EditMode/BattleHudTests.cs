@@ -55,6 +55,22 @@ namespace ProjectVoid.Tests
             Assert.IsFalse(hud.IsCardAffordable(1));
         }
 
+        // 리뷰 지적: 드래그한 카드가 선택되지 않아 드래그 중 미리보기가 없거나 다른 카드 기준으로 나왔다.
+        [Test]
+        public void DraggingACardSelectsIt()
+        {
+            BattleHud hud = NewHud();
+            Unit ally = NewUnit(0, Team.Ally);
+            hud.DrawCard(new BattleEvent(BattleEventKind.CardDrawn) { Unit = ally, Card = Make.Card("a") });
+            hud.DrawCard(new BattleEvent(BattleEventKind.CardDrawn) { Unit = ally, Card = Make.Card("b") });
+            hud.SetInteractive(true);
+            var selected = new List<int>();
+            hud.CardSelected += index => selected.Add(index);
+            CardButton second = hud.GetComponentsInChildren<CardButton>()[1];
+            second.OnBeginDrag(new UnityEngine.EventSystems.PointerEventData(null));
+            CollectionAssert.AreEqual(new[] { 1 }, selected, "drag start selects the dragged card");
+        }
+
         [Test]
         public void DiscardHandClearsButtons()
         {

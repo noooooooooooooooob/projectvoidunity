@@ -51,6 +51,7 @@ namespace ProjectVoid.View
         private Vector2 _pendingClick;
         private bool _hasPendingClick;
         private Vector2 _pointer;
+        private bool _pressStartedOnBoard;
         private bool _hasHover;
         private Team _hoverTeam;
         private Vector2Int _hoverCell;
@@ -247,15 +248,32 @@ namespace ProjectVoid.View
             {
                 return;
             }
+            bool overUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+            HandlePointer(mouse.position.ReadValue(), mouse.leftButton.wasPressedThisFrame, mouse.leftButton.wasReleasedThisFrame, overUi);
+        }
+
+        public bool HasPendingPick => _hasPendingClick;
+
+        /// <summary>이번 프레임의 왼쪽 버튼 상태로 클릭·호버를 판정한다 (Update 가 부르며, 테스트가 직접 부를 수 있다).</summary>
+        public void HandlePointer(Vector2 position, bool pressedThisFrame, bool releasedThisFrame, bool overUi)
+        {
             bool dragging = UiDragActive != null && UiDragActive();
             if (!dragging)
             {
-                _pointer = mouse.position.ReadValue();
+                _pointer = position;
             }
-            bool overUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-            if (mouse.leftButton.wasReleasedThisFrame && !dragging && !overUi)
+            // 누름이 HUD 에서 시작됐으면 보드 위에서 떼도 클릭이 아니다 (Godot 은 GUI 가 누름을 가져가 이런 일이 없었다).
+            if (pressedThisFrame)
             {
-                RequestPick(_pointer);
+                _pressStartedOnBoard = !overUi && !dragging;
+            }
+            if (releasedThisFrame)
+            {
+                if (_pressStartedOnBoard && !dragging && !overUi)
+                {
+                    RequestPick(_pointer);
+                }
+                _pressStartedOnBoard = false;
             }
             UpdateHover();
         }

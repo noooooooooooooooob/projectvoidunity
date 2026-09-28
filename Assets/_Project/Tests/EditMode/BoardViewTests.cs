@@ -85,6 +85,25 @@ namespace ProjectVoid.Tests
             Assert.AreEqual(UnitView.HpBarWidth * 0.5f, view.HpFillWidth, 1e-4f, "hp bar shrinks with hp");
         }
 
+        // 리뷰 지적: UI 위에서 누르고 보드 위에서 떼면 보드 클릭으로 처리돼 카드가 쓰이거나 SP 가 빠졌다.
+        [Test]
+        public void PressOnUiReleasedOverBoardIsNotAClick()
+        {
+            (_, Board3D board) = BuildBoard();
+            board.HandlePointer(Vector2.zero, true, false, true);
+            board.HandlePointer(Vector2.zero, false, true, false);
+            Assert.IsFalse(board.HasPendingPick, "a press that began on the HUD must not pick a tile");
+        }
+
+        [Test]
+        public void PressAndReleaseOnBoardIsAClick()
+        {
+            (_, Board3D board) = BuildBoard();
+            board.HandlePointer(Vector2.zero, true, false, false);
+            board.HandlePointer(Vector2.zero, false, true, false);
+            Assert.IsTrue(board.HasPendingPick, "a press and release on the board picks a tile");
+        }
+
         [Test]
         public void MoveViewWithoutAnimationJumpsHome()
         {

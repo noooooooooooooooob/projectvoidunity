@@ -258,7 +258,12 @@ namespace ProjectVoid.View
             button.SetAffordable(affordable);
             button.Interactable = _interactive;
             button.Clicked += OnCardClicked;
-            button.DragBegan += _ => _dragging = true;
+            // Godot 처럼 끌기 시작한 카드를 선택해 드래그 중 범위 미리보기가 그 카드를 따르게 한다.
+            button.DragBegan += dragged =>
+            {
+                _dragging = true;
+                OnCardClicked(dragged);
+            };
             button.Dragged += (_, position) => CardDragMoved?.Invoke(position);
             button.DragEnded += OnCardDragEnded;
             _cards.Add(button);
