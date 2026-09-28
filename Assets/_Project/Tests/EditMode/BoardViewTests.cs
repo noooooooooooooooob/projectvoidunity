@@ -203,6 +203,65 @@ namespace ProjectVoid.Tests
             Assert.AreEqual(-10f, Mathf.DeltaAngle(0f, enemy.PoseTransform.localEulerAngles.z), 1e-3f);
         }
 
+        private (BattleState state, Board3D board, Texture2D idle, Texture2D attack) BuildAnimatedBoard()
+        {
+            var encounter = Make.Encounter(new Vector2Int(3, 3), new Vector2Int(2, 2),
+                new[] { Make.Place(Make.Ally("a", maxHp: 20, speed: 5, deck: new[] { Make.Card("c", damage: 1), Make.Card("c2", damage: 1), Make.Card("c3", damage: 1), Make.Card("c4", damage: 1) }), 0, 1) },
+                new[] { Make.Place(Make.Enemy("e", maxHp: 20, speed: 1), 0, 0) });
+            var idle = new Texture2D(4 * 8, 8);
+            var attack = new Texture2D(8 * 8, 8);
+            encounter.allyUnits[0].unitData.idleSheet = idle;
+            encounter.allyUnits[0].unitData.attackSheet = attack;
+            BattleState state = Make.State(encounter, 3);
+            _root = new GameObject("BoardTestRoot");
+            var board = _root.AddComponent<Board3D>();
+            board.Build(state, TestAssets.Load());
+            return (state, board, idle, attack);
+        }
+
+        // 스프라이트시트가 있으면 서 있을 때 idle 프레임을 돌린다. 한 장짜리 숨쉬기 변형은 쓰지 않는다.
+        [Test]
+        public void IdleSheetCyclesFrames()
+        {
+            (BattleState state, Board3D board, Texture2D idle, _) = BuildAnimatedBoard();
+            UnitView view = board.ViewFor(state.Units[0]);
+            Assert.AreEqual(4, view.FrameCount(idle));
+            view.TickIdle(0f);
+            Assert.AreSame(idle, view.BodyMaterial.GetTexture("_BaseMap"));
+            Assert.AreEqual(0.25f, view.BodyMaterial.GetTextureScale("_BaseMap").x, 1e-4f, "one frame wide");
+            float first = view.BodyMaterial.GetTextureOffset("_BaseMap").x;
+            view.TickIdle(1f / UnitView.IdleFps);
+            Assert.AreEqual(first + 0.25f, view.BodyMaterial.GetTextureOffset("_BaseMap").x, 1e-4f, "next frame");
+            Assert.AreEqual(Vector3.one, view.PoseTransform.localScale, "frames replace the breathing squash");
+        }
+
+        [Test]
+        public void AttackShowsAttackFramesThenBackToIdle()
+        {
+            (BattleState state, Board3D board, Texture2D idle, Texture2D attack) = BuildAnimatedBoard();
+            UnitView view = board.ViewFor(state.Units[0]);
+            Assert.AreEqual(UnitView.AttackFrameTime, view.AttackDuration, "frame attacks take longer to read");
+            System.Collections.IEnumerator lunge = view.LungeToward(Vector3.right);
+            lunge.MoveNext();
+            // LungeToward 는 Tween 을 중첩으로 넘기므로 그 첫 단계까지 진행한다.
+            ((System.Collections.IEnumerator)lunge.Current).MoveNext();
+            Assert.AreSame(attack, view.BodyMaterial.GetTexture("_BaseMap"));
+            Assert.AreEqual(1f / 8f, view.BodyMaterial.GetTextureScale("_BaseMap").x, 1e-4f);
+            Assert.AreEqual(Vector3.one, view.PoseTransform.localScale, "no squash on top of drawn frames");
+            view.ResetPose();
+            Assert.AreSame(idle, view.BodyMaterial.GetTexture("_BaseMap"), "back to idle");
+        }
+
+        [Test]
+        public void UnitWithoutSheetsKeepsItsSingleSprite()
+        {
+            (BattleState state, Board3D board) = BuildBoard();
+            UnitView view = board.ViewFor(state.Units[0]);
+            Assert.AreEqual(UnitView.ActionTime, view.AttackDuration);
+            view.TickIdle(0.4f);
+            Assert.AreEqual(Vector2.one, view.BodyMaterial.GetTextureScale("_BaseMap"));
+        }
+
         private static Color BaseColorOf(Board3D board, Team team, Vector2Int cell)
             => board.TileRenderer(team, cell).sharedMaterial.GetColor("_BaseColor");
 

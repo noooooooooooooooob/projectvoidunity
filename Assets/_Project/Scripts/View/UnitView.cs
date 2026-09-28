@@ -20,12 +20,17 @@ namespace ProjectVoid.View
         public const float MoveTime = 0.25f;
         // 발을 축으로 카메라 반대쪽으로 눕히는 각도. 44° 로 내려다볼 때 판이 덜 눌려 보인다.
         public const float BodyTiltDeg = 20f;
+        public const float IdleFps = 8f;
+        // 그려진 프레임 동작은 코드 모션보다 길어야 읽힌다.
+        public const float AttackFrameTime = 0.5f;
+        public const float HitFrameTime = 0.4f;
 
         private static readonly Color FlashColor = new Color(1f, 0.45f, 0.45f);
         private static readonly Color ContactShadowColor = new Color(0f, 0f, 0f, 0.7f);
         private static readonly Color AllyRingColor = new Color(0.3f, 0.55f, 1f, 0.8f);
         private static readonly Color EnemyRingColor = new Color(1f, 0.3f, 0.25f, 0.8f);
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int BaseMapId = Shader.PropertyToID("_BaseMap");
 
         private ViewAssets _assets;
         // 발 위치를 축으로 도는 피벗. 연출(튀어오르기·흔들림)은 이 피벗을 움직인다.
@@ -35,6 +40,11 @@ namespace ProjectVoid.View
         private float _idlePhase;
         // 연출 중에는 그 연출이 자세를 잡으므로 숨쉬기를 멈춘다.
         private bool _acting;
+        private Texture _still;
+        private Texture2D _idleSheet;
+        private Texture2D _attackSheet;
+        private Texture2D _hitSheet;
+        private int _idleFrameOffset;
         private Material _bodyMaterial;
         private Transform _overhead;
         private TextMeshPro _nameLabel;
@@ -58,6 +68,10 @@ namespace ProjectVoid.View
         public Color ShadowColor => _shadow.color;
         public Color RingColor => _ring.color;
         public Transform PoseTransform => _pose;
+        public float AttackDuration => _attackSheet != null ? AttackFrameTime : ActionTime;
+        public float HitDuration => _hitSheet != null ? HitFrameTime : FlashTime;
+
+        public int FrameCount(Texture2D sheet) => Mathf.Max(1, sheet.width / sheet.height);
 
         public void Setup(Unit unit, Sprite sprite, ViewAssets assets)
         {
@@ -88,7 +102,12 @@ namespace ProjectVoid.View
             quad.transform.localScale = new Vector3(SpriteHeight * aspect * facing, SpriteHeight, 1f);
             quad.transform.localPosition = new Vector3(0f, SpriteHeight / 2f, 0f);
             _bodyMaterial = new Material(assets.unitMaterial);
-            _bodyMaterial.SetTexture("_BaseMap", sprite.texture);
+            _still = sprite.texture;
+            _idleSheet = unit.Data.idleSheet;
+            _attackSheet = unit.Data.attackSheet;
+            _hitSheet = unit.Data.hitSheet;
+            _idleFrameOffset = unit.UnitId * 5;
+            ReturnToIdle();
             BodyRenderer = quad.GetComponent<MeshRenderer>();
             BodyRenderer.sharedMaterial = _bodyMaterial;
             BodyRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
@@ -123,10 +142,40 @@ namespace ProjectVoid.View
 
         public void TickIdle(float time)
         {
-            if (!_acting)
+            if (_acting)
             {
-                ApplyPose(UnitMotion.Idle(time, _idlePhase));
+                return;
             }
+            if (_idleSheet != null)
+            {
+                ShowFrame(_idleSheet, Mathf.FloorToInt(time * IdleFps) + _idleFrameOffset);
+                return;
+            }
+            ApplyPose(UnitMotion.Idle(time, _idlePhase));
+        }
+
+        // 띠 텍스처의 한 칸만 보이게 UV 를 옮긴다. 텍스처만 바뀌므로 조명·그림자는 그대로.
+        private void ShowFrame(Texture2D sheet, int index)
+        {
+            int count = FrameCount(sheet);
+            _bodyMaterial.SetTexture(BaseMapId, sheet);
+            _bodyMaterial.SetTextureScale(BaseMapId, new Vector2(1f / count, 1f));
+            _bodyMaterial.SetTextureOffset(BaseMapId, new Vector2((float)(index % count) / count, 0f));
+        }
+
+        private void ShowSheetProgress(Texture2D sheet, float t)
+            => ShowFrame(sheet, Mathf.Min(Mathf.FloorToInt(t * FrameCount(sheet)), FrameCount(sheet) - 1));
+
+        private void ReturnToIdle()
+        {
+            if (_idleSheet != null)
+            {
+                ShowFrame(_idleSheet, _idleFrameOffset);
+                return;
+            }
+            _bodyMaterial.SetTexture(BaseMapId, _still);
+            _bodyMaterial.SetTextureScale(BaseMapId, Vector2.one);
+            _bodyMaterial.SetTextureOffset(BaseMapId, Vector2.zero);
         }
 
         public void ApplyPose(UnitMotion.Pose pose)
@@ -180,6 +229,7 @@ namespace ProjectVoid.View
             _acting = false;
             _pose.localScale = Vector3.one;
             _pose.localRotation = Quaternion.identity;
+            ReturnToIdle();
             _bodyMaterial.SetColor(BaseColorId, Color.white);
         }
 
@@ -199,12 +249,21 @@ namespace ProjectVoid.View
             Vector3 home = HomePosition;
             Vector3 lunge = home + direction * LungeDistance;
             _acting = true;
-            yield return Coroutines.Tween(ActionTime, t =>
+            yield return Coroutines.Tween(AttackDuration, t =>
             {
                 transform.position = Vector3.Lerp(home, lunge, UnitMotion.LungeReach(t));
-                ApplyPose(UnitMotion.Attack(t));
+                // 그려진 프레임 위에 늘이기·기울이기를 더하면 과해진다.
+                if (_attackSheet != null)
+                {
+                    ShowSheetProgress(_attackSheet, t);
+                }
+                else
+                {
+                    ApplyPose(UnitMotion.Attack(t));
+                }
             });
             _acting = false;
+            ReturnToIdle();
         }
 
         public IEnumerator Hop()
@@ -225,15 +284,23 @@ namespace ProjectVoid.View
             float[] keys = { 0f, 0.08f, -0.08f, 0.05f, 0f };
             Transform sprite = _body;
             _acting = true;
-            yield return Coroutines.Tween(FlashTime, t =>
+            yield return Coroutines.Tween(HitDuration, t =>
             {
-                ApplyPose(UnitMotion.Hit(t));
+                if (_hitSheet != null)
+                {
+                    ShowSheetProgress(_hitSheet, t);
+                }
+                else
+                {
+                    ApplyPose(UnitMotion.Hit(t));
+                }
                 int quarter = Mathf.Min((int)(t * 4f), 3);
                 _bodyMaterial.SetColor(BaseColorId, quarter % 2 == 0 && t < 1f ? FlashColor : Color.white);
                 float local = t * 4f - quarter;
                 sprite.localPosition = new Vector3(Mathf.Lerp(keys[quarter], keys[quarter + 1], local), 0f, 0f);
             });
             _acting = false;
+            ReturnToIdle();
         }
 
         public void PopText(string text, Color color)

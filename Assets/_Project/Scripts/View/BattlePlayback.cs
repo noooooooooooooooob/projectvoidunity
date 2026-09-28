@@ -177,7 +177,7 @@ namespace ProjectVoid.View
             }
             view.PopText($"-{e.Amount}", DamageColor);
             yield return view.FlashAndShake();
-            yield return Wait(DamageTime - UnitView.FlashTime);
+            yield return Wait(Mathf.Max(0f, DamageTime - view.HitDuration));
         }
 
         private IEnumerator Healed(BattleEvent e)

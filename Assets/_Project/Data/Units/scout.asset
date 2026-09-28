@@ -17,6 +17,9 @@ MonoBehaviour:
   maxHp: 22
   speed: 16
   sprite: {fileID: 21300000, guid: b6b13182dad7a2f4f9e0bfe55365a86d, type: 3}
+  idleSheet: {fileID: 2800000, guid: 3b0f89e1410c5524696e1f552ac58206, type: 3}
+  attackSheet: {fileID: 2800000, guid: 1a6edfbf7064aec4290f55755d22f0d9, type: 3}
+  hitSheet: {fileID: 2800000, guid: e72dc5f93636ae04d8f6c92c574b2a31, type: 3}
   maxSp: 3
   deck:
   - {fileID: 11400000, guid: afc37595a00e600419c5da4dab7ab610, type: 2}
