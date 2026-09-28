@@ -1,0 +1,41 @@
+{
+    "asset": "744713f2d65e5d04ab5a656bbf2a43a3",
+    "fileName": "01a0e766-d0bd-767f-bb58-d8c9875d7edf.png",
+    "prompt": "Pixel art game character sprite in the exact style of the reference image: same chibi proportions (big head, about 2.5 heads tall), 1-pixel black outline, pale skin with soft red rim shading, limited palette, 3/4 view facing right, full body standing idle, centered, on a plain flat white background. A hulking thug with a wooden club, bulky arms, scowling.",
+    "negativePrompt": "",
+    "model": "gpt-image-1-5",
+    "modelName": "GPT Image 1.5",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "9e409c2ac15f23d4db947d8774e5f7bc",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

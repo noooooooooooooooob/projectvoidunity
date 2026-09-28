@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: "\uC815\uCC30\uBCD1"
   maxHp: 22
   speed: 16
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: b6b13182dad7a2f4f9e0bfe55365a86d, type: 3}
   maxSp: 3
   deck:
   - {fileID: 11400000, guid: afc37595a00e600419c5da4dab7ab610, type: 2}

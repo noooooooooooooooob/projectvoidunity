@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: "\uBCF4\uCD08"
   maxHp: 24
   speed: 6
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: c91be2424db772c4c8aec0651ebac217, type: 3}
   attackDamage: 5
   attackType: 1
   attackShape: 2
