@@ -1,0 +1,57 @@
+using NUnit.Framework;
+using ProjectVoid.EditorTools;
+using TMPro;
+using UnityEditor;
+using UnityEngine;
+
+namespace ProjectVoid.Tests
+{
+    public class FontSetupTests
+    {
+        private static string Missing(uint[] codes)
+        {
+            var text = new System.Text.StringBuilder();
+            foreach (uint code in codes ?? new uint[0])
+            {
+                text.Append(char.ConvertFromUtf32((int)code));
+            }
+            return text.ToString();
+        }
+
+        [Test]
+        public void KoreanFontCoversGameText()
+        {
+            var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontSetup.FontAssetPath);
+            Assert.IsNotNull(font, "font asset exists");
+            bool ok = font.HasCharacters("선봉사수정찰병괴한보초추적자베기횡베기꿰뚫기사격관통일제폭발탄차례종료승리패배이동방어휴식공격쓰러짐빈칸거리막힘", out uint[] missing, false, true);
+            Assert.IsTrue(ok, "missing: " + Missing(missing));
+        }
+
+        // HUD·힌트가 쓰는 기호. 빠진 기호가 있으면 이 테스트를 고치지 말고, 그 기호를 쓰는 코드(BattleHud.TurnBarText 의 ▶ →,
+        // RefreshSp 의 ● ○, BattleRoot.HintText 의 ✓, 로그의 ― —)에서 ASCII(> - * O)로 바꾸고 이 목록에서도 뺀다.
+        [Test]
+        public void SymbolsAreCovered()
+        {
+            var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontSetup.FontAssetPath);
+            bool ok = font.HasCharacters("▶→●○✓―—·", out uint[] missing, false, true);
+            Assert.IsTrue(ok, "missing: " + Missing(missing));
+        }
+
+        [Test]
+        public void OverlayMaterialUsesOverlayShader()
+        {
+            var material = AssetDatabase.LoadAssetAtPath<Material>(FontSetup.OverlayMaterialPath);
+            Assert.IsNotNull(material);
+            Assert.AreEqual("TextMeshPro/Distance Field Overlay", material.shader.name);
+        }
+
+        [Test]
+        public void TileMaterialHasEmission()
+        {
+            var material = AssetDatabase.LoadAssetAtPath<Material>(FontSetup.TileMaterialPath);
+            Assert.IsNotNull(material);
+            Assert.AreEqual("Universal Render Pipeline/Lit", material.shader.name);
+            Assert.IsTrue(material.IsKeywordEnabled("_EMISSION"));
+        }
+    }
+}
