@@ -92,7 +92,8 @@ namespace ProjectVoid.View
             _moveButton = MakeButton(root, "이동", new Vector2(-290f, 100f), new Vector2(-160f, 160f), OnMoveClicked);
             _endTurnButton = MakeButton(root, "차례 종료", new Vector2(-290f, 20f), new Vector2(-24f, 90f), () => EndTurnPressed?.Invoke());
 
-            var arrowObject = new GameObject("AimArrow", typeof(RectTransform));
+            // CanvasRenderer 가 없으면 UI 그래픽이 그려지지 않는다 (AddComponent 로는 자동으로 붙지 않았다).
+            var arrowObject = new GameObject("AimArrow", typeof(RectTransform), typeof(CanvasRenderer));
             var arrowRect = (RectTransform)arrowObject.transform;
             arrowRect.SetParent(root, false);
             Anchor(arrowRect, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);

@@ -88,6 +88,15 @@ namespace ProjectVoid.Tests
             Assert.IsFalse(hud.IsAiming, "arrow hidden after the drop");
         }
 
+        // 버그: 화살표 오브젝트에 CanvasRenderer 가 없어 IsAiming 은 true 인데 화면에 아무것도 그려지지 않았다.
+        [Test]
+        public void AimArrowCanRender()
+        {
+            BattleHud hud = NewHud();
+            AimArrow arrow = hud.GetComponentInChildren<AimArrow>(true);
+            Assert.IsNotNull(arrow.GetComponent<CanvasRenderer>(), "a UI graphic needs a CanvasRenderer to be drawn");
+        }
+
         [Test]
         public void DiscardHandClearsButtons()
         {
