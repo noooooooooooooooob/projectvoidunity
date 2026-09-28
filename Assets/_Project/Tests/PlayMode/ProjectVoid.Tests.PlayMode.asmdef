@@ -1,0 +1,9 @@
+{
+    "name": "ProjectVoid.Tests.PlayMode",
+    "rootNamespace": "ProjectVoid.Tests",
+    "references": ["ProjectVoid.Combat", "ProjectVoid.View", "UnityEngine.TestRunner", "Unity.TextMeshPro", "UnityEngine.UI"],
+    "overrideReferences": true,
+    "precompiledReferences": ["nunit.framework.dll"],
+    "autoReferenced": false,
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"]
+}

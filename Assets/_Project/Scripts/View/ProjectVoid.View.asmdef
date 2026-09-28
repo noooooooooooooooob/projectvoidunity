@@ -1,0 +1,6 @@
+{
+    "name": "ProjectVoid.View",
+    "rootNamespace": "ProjectVoid.View",
+    "references": ["ProjectVoid.Combat", "Unity.InputSystem", "Unity.TextMeshPro", "UnityEngine.UI"],
+    "autoReferenced": true
+}

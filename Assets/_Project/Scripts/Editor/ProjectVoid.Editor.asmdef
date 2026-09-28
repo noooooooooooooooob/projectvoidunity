@@ -1,0 +1,7 @@
+{
+    "name": "ProjectVoid.Editor",
+    "rootNamespace": "ProjectVoid.EditorTools",
+    "references": ["ProjectVoid.Combat", "ProjectVoid.View", "Unity.TextMeshPro", "Unity.TextMeshPro.Editor", "Unity.InputSystem", "UnityEngine.UI"],
+    "includePlatforms": ["Editor"],
+    "autoReferenced": true
+}
