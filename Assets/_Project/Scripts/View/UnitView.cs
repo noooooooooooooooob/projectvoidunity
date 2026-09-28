@@ -30,6 +30,11 @@ namespace ProjectVoid.View
         private ViewAssets _assets;
         // 발 위치를 축으로 도는 피벗. 연출(튀어오르기·흔들림)은 이 피벗을 움직인다.
         private Transform _body;
+        // _body 아래 발 위치의 피벗. 숨쉬기·예비동작 같은 늘이기/기울이기 자세를 맡는다 (_body 회전은 빌보드 몫).
+        private Transform _pose;
+        private float _idlePhase;
+        // 연출 중에는 그 연출이 자세를 잡으므로 숨쉬기를 멈춘다.
+        private bool _acting;
         private Material _bodyMaterial;
         private Transform _overhead;
         private TextMeshPro _nameLabel;
@@ -52,6 +57,7 @@ namespace ProjectVoid.View
         public Material BodyMaterial => _bodyMaterial;
         public Color ShadowColor => _shadow.color;
         public Color RingColor => _ring.color;
+        public Transform PoseTransform => _pose;
 
         public void Setup(Unit unit, Sprite sprite, ViewAssets assets)
         {
@@ -67,7 +73,11 @@ namespace ProjectVoid.View
             // SpriteRenderer 는 Lit 조명·그림자를 제대로 받지 못해 판에 텍스처를 입힌 사각형으로 그린다.
             GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
             quad.name = "Sprite";
-            quad.transform.SetParent(_body, false);
+            _pose = new GameObject("Pose").transform;
+            _pose.SetParent(_body, false);
+            // 유닛마다 숨쉬는 박자를 어긋나게.
+            _idlePhase = unit.UnitId * 1.7f;
+            quad.transform.SetParent(_pose, false);
             // 클릭 판정은 유닛 루트의 상자가 맡는다. Destroy 는 프레임 끝이라 먼저 꺼 둔다.
             Collider quadCollider = quad.GetComponent<Collider>();
             quadCollider.enabled = false;
@@ -104,6 +114,28 @@ namespace ProjectVoid.View
             PickTag = gameObject.AddComponent<CellTag>();
 
             SetStats(unit.Hp, unit.Data.maxHp, unit.Block);
+        }
+
+        private void Update()
+        {
+            TickIdle(Time.time);
+        }
+
+        public void TickIdle(float time)
+        {
+            if (!_acting)
+            {
+                ApplyPose(UnitMotion.Idle(time, _idlePhase));
+            }
+        }
+
+        public void ApplyPose(UnitMotion.Pose pose)
+        {
+            // 위로 늘면 옆으로 얇아져 부피가 유지돼 보인다.
+            _pose.localScale = new Vector3(1f - pose.stretch * 0.5f, 1f + pose.stretch, 1f);
+            // 스프라이트 판이 좌우 반전돼 있어도 "뒤"는 바라보는 방향의 반대여야 한다.
+            float facing = Unit.IsAlly ? 1f : -1f;
+            _pose.localRotation = Quaternion.Euler(0f, 0f, pose.lean * facing);
         }
 
         public void SetStats(int hp, int maxHp, int block)
@@ -145,6 +177,9 @@ namespace ProjectVoid.View
         {
             transform.position = HomePosition;
             _body.localPosition = Vector3.zero;
+            _acting = false;
+            _pose.localScale = Vector3.one;
+            _pose.localRotation = Quaternion.identity;
             _bodyMaterial.SetColor(BaseColorId, Color.white);
         }
 
@@ -163,16 +198,25 @@ namespace ProjectVoid.View
             }
             Vector3 home = HomePosition;
             Vector3 lunge = home + direction * LungeDistance;
-            yield return Coroutines.Tween(ActionTime / 2f, t => transform.position = Vector3.Lerp(home, lunge, t));
-            yield return Coroutines.Tween(ActionTime / 2f, t => transform.position = Vector3.Lerp(lunge, home, t));
+            _acting = true;
+            yield return Coroutines.Tween(ActionTime, t =>
+            {
+                transform.position = Vector3.Lerp(home, lunge, UnitMotion.LungeReach(t));
+                ApplyPose(UnitMotion.Attack(t));
+            });
+            _acting = false;
         }
 
         public IEnumerator Hop()
         {
             Transform sprite = _body;
-            var up = new Vector3(0f, 0.25f, 0f);
-            yield return Coroutines.Tween(ActionTime / 2f, t => sprite.localPosition = Vector3.Lerp(Vector3.zero, up, t));
-            yield return Coroutines.Tween(ActionTime / 2f, t => sprite.localPosition = Vector3.Lerp(up, Vector3.zero, t));
+            _acting = true;
+            yield return Coroutines.Tween(ActionTime, t =>
+            {
+                sprite.localPosition = new Vector3(0f, UnitMotion.HopHeight(t), 0f);
+                ApplyPose(UnitMotion.Hop(t));
+            });
+            _acting = false;
         }
 
         // Godot: 색 번쩍임 2회 + 좌우 흔들림(0.08, -0.08, 0.05, 0)을 FLASH_TIME 동안 동시에.
@@ -180,13 +224,16 @@ namespace ProjectVoid.View
         {
             float[] keys = { 0f, 0.08f, -0.08f, 0.05f, 0f };
             Transform sprite = _body;
+            _acting = true;
             yield return Coroutines.Tween(FlashTime, t =>
             {
+                ApplyPose(UnitMotion.Hit(t));
                 int quarter = Mathf.Min((int)(t * 4f), 3);
                 _bodyMaterial.SetColor(BaseColorId, quarter % 2 == 0 && t < 1f ? FlashColor : Color.white);
                 float local = t * 4f - quarter;
                 sprite.localPosition = new Vector3(Mathf.Lerp(keys[quarter], keys[quarter + 1], local), 0f, 0f);
             });
+            _acting = false;
         }
 
         public void PopText(string text, Color color)
@@ -215,8 +262,10 @@ namespace ProjectVoid.View
             _hpFill.enabled = false;
             _shadow.enabled = false;
             _ring.enabled = false;
+            _acting = true;
             yield return Coroutines.Tween(FadeTime, t =>
             {
+                ApplyPose(UnitMotion.Death(t));
                 float alpha = 1f - t;
                 // 알파 잘라내기 머티리얼이라 알파를 내리면 픽셀이 점점 사라진다.
                 _bodyMaterial.SetColor(BaseColorId, new Color(1f, 1f, 1f, alpha));

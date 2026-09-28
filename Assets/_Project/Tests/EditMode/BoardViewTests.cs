@@ -148,6 +148,61 @@ namespace ProjectVoid.Tests
             Assert.AreEqual(Board3D.TileState.Current, board.GetTileState(Team.Ally, new Vector2Int(1, 1)));
         }
 
+        // 가만히 서 있을 때 전혀 움직이지 않았다. 발을 축으로 숨쉬듯 늘었다 줄어든다.
+        [Test]
+        public void IdleUnitBreathes()
+        {
+            (BattleState state, Board3D board) = BuildBoard();
+            UnitView view = board.ViewFor(state.Units[0]);
+            view.TickIdle(0.4f);
+            float first = view.PoseTransform.localScale.y;
+            view.TickIdle(0.8f);
+            Assert.AreNotEqual(first, view.PoseTransform.localScale.y);
+            Assert.AreEqual(Vector3.zero, view.PoseTransform.localPosition, "pivot stays at the feet");
+        }
+
+        [Test]
+        public void IdleBreathingPausesDuringAnAction()
+        {
+            (BattleState state, Board3D board) = BuildBoard();
+            UnitView view = board.ViewFor(state.Units[0]);
+            System.Collections.IEnumerator lunge = view.LungeToward(Vector3.right);
+            lunge.MoveNext();
+            Vector3 during = view.PoseTransform.localScale;
+            view.TickIdle(0.4f);
+            view.TickIdle(0.8f);
+            Assert.AreEqual(during, view.PoseTransform.localScale, "the action owns the pose");
+        }
+
+        [Test]
+        public void ResetPoseStandsTheUnitBackUp()
+        {
+            (BattleState state, Board3D board) = BuildBoard();
+            UnitView view = board.ViewFor(state.Units[0]);
+            view.ApplyPose(new UnitMotion.Pose { stretch = 0.2f, lean = 40f });
+            view.ResetPose();
+            Assert.AreEqual(Vector3.one, view.PoseTransform.localScale);
+            Assert.AreEqual(Quaternion.identity, view.PoseTransform.localRotation);
+            view.TickIdle(0.4f);
+            Assert.AreNotEqual(1f, view.PoseTransform.localScale.y, "breathing resumes");
+        }
+
+        // 적은 좌우가 뒤집혀 있으므로 "뒤로 젖히기"도 반대 방향이어야 한다.
+        [Test]
+        public void LeanIsMirroredForEnemies()
+        {
+            (BattleState state, Board3D board) = BuildBoard();
+            UnitView ally = board.ViewFor(state.Units[0]);
+            UnitView enemy = board.ViewFor(state.Units[1]);
+            var pose = new UnitMotion.Pose { stretch = 0.1f, lean = 10f };
+            ally.ApplyPose(pose);
+            enemy.ApplyPose(pose);
+            Assert.AreEqual(1.1f, ally.PoseTransform.localScale.y, 1e-4f);
+            Assert.Less(ally.PoseTransform.localScale.x, 1f, "keeps volume: thinner when taller");
+            Assert.AreEqual(10f, Mathf.DeltaAngle(0f, ally.PoseTransform.localEulerAngles.z), 1e-3f);
+            Assert.AreEqual(-10f, Mathf.DeltaAngle(0f, enemy.PoseTransform.localEulerAngles.z), 1e-3f);
+        }
+
         private static Color BaseColorOf(Board3D board, Team team, Vector2Int cell)
             => board.TileRenderer(team, cell).sharedMaterial.GetColor("_BaseColor");
 
