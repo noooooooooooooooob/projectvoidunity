@@ -21,15 +21,24 @@ namespace ProjectVoid.View
         // 발을 축으로 카메라 반대쪽으로 눕히는 각도. 44° 로 내려다볼 때 판이 덜 눌려 보인다.
         public const float BodyTiltDeg = 20f;
         public const float IdleFps = 8f;
-        // 그려진 프레임 동작은 코드 모션보다 길어야 읽힌다.
-        public const float AttackFrameTime = 0.5f;
-        public const float HitFrameTime = 0.4f;
+        // 그려진 프레임 동작은 코드 모션보다 길어야 읽힌다. 16장 기준 공격 16fps, 피격 20fps.
+        public const float AttackFrameTime = 1.0f;
+        public const float HitFrameTime = 0.8f;
+        public const float HitWhiteTime = 0.06f;
+        public const float DamagePopPunch = 1.6f;
+        public const float KillPopPunch = 2f;
 
         private static readonly Color FlashColor = new Color(1f, 0.45f, 0.45f);
         private static readonly Color ContactShadowColor = new Color(0f, 0f, 0f, 0.7f);
         private static readonly Color AllyRingColor = new Color(0.3f, 0.55f, 1f, 0.8f);
         private static readonly Color EnemyRingColor = new Color(1f, 0.3f, 0.25f, 0.8f);
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
+        // 피해 숫자가 크게 튀었다가 원래 크기로 돌아오는 시간.
+        private const float PopPunchTime = 0.15f;
+        private const int SparkCount = 12;
+        private static readonly Color SparkHot = new Color(1f, 0.95f, 0.8f);
+        private static readonly Color SparkWarm = new Color(1f, 0.55f, 0.15f);
         private static readonly int BaseMapId = Shader.PropertyToID("_BaseMap");
 
         private ViewAssets _assets;
@@ -57,6 +66,8 @@ namespace ProjectVoid.View
         private int _hp;
         private int _maxHp = 1;
         private int _block;
+        private float _whiteUntil;
+        private BoardProjection _projection;
 
         public Unit Unit { get; private set; }
         public Vector3 HomePosition { get; private set; }
@@ -73,16 +84,21 @@ namespace ProjectVoid.View
 
         public int FrameCount(Texture2D sheet) => Mathf.Max(1, sheet.width / sheet.height);
 
-        public void Setup(Unit unit, Sprite sprite, ViewAssets assets)
+        public void Setup(Unit unit, Sprite sprite, ViewAssets assets, BoardProjection projection = BoardProjection.Perspective3D)
         {
+            _projection = projection;
             Unit = unit;
             _assets = assets;
 
             _body = new GameObject("Body").transform;
             _body.SetParent(transform, false);
-            var billboard = _body.gameObject.AddComponent<Billboard>();
-            billboard.yAxisOnly = true;
-            billboard.tiltDeg = BodyTiltDeg;
+            // 2D 는 정사영 카메라가 정면을 보므로 판을 돌리거나 눕힐 필요가 없다.
+            if (projection == BoardProjection.Perspective3D)
+            {
+                var billboard = _body.gameObject.AddComponent<Billboard>();
+                billboard.yAxisOnly = true;
+                billboard.tiltDeg = BodyTiltDeg;
+            }
 
             // SpriteRenderer 는 Lit 조명·그림자를 제대로 받지 못해 판에 텍스처를 입힌 사각형으로 그린다.
             GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -112,6 +128,10 @@ namespace ProjectVoid.View
             BodyRenderer.sharedMaterial = _bodyMaterial;
             BodyRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
             BodyRenderer.receiveShadows = false;
+            // 흰 번쩍임은 발광으로 칠한다. 평소엔 검정이라 아무 영향이 없다.
+            _bodyMaterial.EnableKeyword("_EMISSION");
+            _bodyMaterial.SetColor(EmissionColorId, Color.black);
+            Sparks = MakeSparks();
 
             _shadow = FloorDecal("Shadow", assets.Shadow, new Vector3(0.9f, 0.5f, 1f), 0.01f);
             _shadow.color = ContactShadowColor;
@@ -138,6 +158,7 @@ namespace ProjectVoid.View
         private void Update()
         {
             TickIdle(Time.time);
+            TickFlash(Time.realtimeSinceStartup);
         }
 
         public void TickIdle(float time)
@@ -238,7 +259,8 @@ namespace ProjectVoid.View
             gameObject.SetActive(alive);
         }
 
-        public IEnumerator LungeToward(Vector3 worldTarget)
+        /// <summary>distance 만큼 target 쪽으로 나갔다 돌아온다. 음수면 뒤로 물러나는 반동이다 (원거리).</summary>
+        public IEnumerator LungeToward(Vector3 worldTarget, float distance = LungeDistance)
         {
             Vector3 direction = worldTarget - HomePosition;
             direction.y = 0f;
@@ -247,7 +269,7 @@ namespace ProjectVoid.View
                 direction.Normalize();
             }
             Vector3 home = HomePosition;
-            Vector3 lunge = home + direction * LungeDistance;
+            Vector3 lunge = home + direction * distance;
             _acting = true;
             yield return Coroutines.Tween(AttackDuration, t =>
             {
@@ -279,11 +301,15 @@ namespace ProjectVoid.View
         }
 
         // Godot: 색 번쩍임 2회 + 좌우 흔들림(0.08, -0.08, 0.05, 0)을 FLASH_TIME 동안 동시에.
-        public IEnumerator FlashAndShake()
+        /// <summary>knockback 은 맞아서 밀려날 최대 변위(바닥 평면). 끝나면 정확히 제자리로 돌아온다.</summary>
+        public IEnumerator FlashAndShake(Vector3 knockback = default)
         {
+            bool shoved = knockback != Vector3.zero;
+            Vector3 home = HomePosition;
             float[] keys = { 0f, 0.08f, -0.08f, 0.05f, 0f };
             Transform sprite = _body;
             _acting = true;
+            StartImpact();
             yield return Coroutines.Tween(HitDuration, t =>
             {
                 if (_hitSheet != null)
@@ -298,24 +324,56 @@ namespace ProjectVoid.View
                 _bodyMaterial.SetColor(BaseColorId, quarter % 2 == 0 && t < 1f ? FlashColor : Color.white);
                 float local = t * 4f - quarter;
                 sprite.localPosition = new Vector3(Mathf.Lerp(keys[quarter], keys[quarter + 1], local), 0f, 0f);
+                if (shoved)
+                {
+                    transform.position = home + knockback * UnitMotion.KnockbackReach(t);
+                }
             });
+            if (shoved)
+            {
+                transform.position = home;
+            }
             _acting = false;
             ReturnToIdle();
         }
 
-        public void PopText(string text, Color color)
+        public ParticleSystem Sparks { get; private set; }
+
+        /// <summary>맞는 첫 순간: 몸을 완전한 흰색으로 칠하고 불꽃을 튀긴다. 히트스톱 중에도 끝나도록 실제 시간으로 잰다.</summary>
+        public void StartImpact()
+        {
+            _bodyMaterial.SetColor(EmissionColorId, Color.white);
+            _whiteUntil = Time.realtimeSinceStartup + HitWhiteTime;
+            Sparks.Emit(SparkCount);
+        }
+
+        public void TickFlash(float realtime)
+        {
+            if (_whiteUntil > 0f && realtime >= _whiteUntil)
+            {
+                _whiteUntil = 0f;
+                _bodyMaterial.SetColor(EmissionColorId, Color.black);
+            }
+        }
+
+        /// <summary>피해 숫자 크기: punch 배에서 시작해 PopPunchTime 동안 1 로 줄어든다. t 는 PopTime 기준 진행률.</summary>
+        public static float PopScale(float t, float punch)
+            => Mathf.Lerp(punch, 1f, Mathf.Clamp01(t * PopTime / PopPunchTime));
+
+        public void PopText(string text, Color color, float punch = 1f)
         {
             TextMeshPro label = MakeLabel(text, 2.6f, new Vector3(0f, 0.5f, 0f));
             label.color = color;
-            StartCoroutine(PopRoutine(label));
+            StartCoroutine(PopRoutine(label, punch));
         }
 
-        private IEnumerator PopRoutine(TextMeshPro label)
+        private IEnumerator PopRoutine(TextMeshPro label, float punch)
         {
             Vector3 start = label.transform.localPosition;
             Color color = label.color;
             yield return Coroutines.Tween(PopTime, t =>
             {
+                label.transform.localScale = Vector3.one * PopScale(t, punch);
                 label.transform.localPosition = start + new Vector3(0f, 0.6f * t, 0f);
                 label.color = new Color(color.r, color.g, color.b, 1f - t);
             });
@@ -356,9 +414,19 @@ namespace ProjectVoid.View
         {
             var decalObject = new GameObject(name);
             decalObject.transform.SetParent(transform, false);
-            decalObject.transform.localPosition = new Vector3(0f, height, 0f);
-            decalObject.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            decalObject.transform.localScale = scale;
+            if (_projection == BoardProjection.Flat2D)
+            {
+                // 화면 평면에 눕힌 타원. 몸(z=0)과 타일(z=+FlatTileDepth) 사이에 두고, 높을수록(고리) 몸 쪽으로.
+                decalObject.transform.localPosition = new Vector3(0f, 0f, Board3D.FlatTileDepth - height);
+                decalObject.transform.localRotation = Quaternion.identity;
+                decalObject.transform.localScale = new Vector3(scale.x, scale.y * BoardLayout.FlatRowScale, scale.z);
+            }
+            else
+            {
+                decalObject.transform.localPosition = new Vector3(0f, height, 0f);
+                decalObject.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+                decalObject.transform.localScale = scale;
+            }
             var decal = decalObject.AddComponent<SpriteRenderer>();
             decal.sprite = sprite;
             return decal;
@@ -374,6 +442,33 @@ namespace ProjectVoid.View
             {
                 DestroyImmediate(target);
             }
+        }
+
+        // 가슴 높이에서 사방으로 튀는 네모 불꽃. 히트스톱(timeScale 0.05) 중에도 날아가도록 실제 시간으로 돈다.
+        private ParticleSystem MakeSparks()
+        {
+            var sparkObject = new GameObject("Sparks");
+            sparkObject.transform.SetParent(transform, false);
+            sparkObject.transform.localPosition = new Vector3(0f, SpriteHeight * 0.55f, 0f);
+            var sparks = sparkObject.AddComponent<ParticleSystem>();
+            sparks.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            ParticleSystem.MainModule main = sparks.main;
+            main.playOnAwake = false;
+            main.useUnscaledTime = true;
+            main.loop = false;
+            main.startLifetime = 0.25f;
+            main.startSpeed = new ParticleSystem.MinMaxCurve(2f, 4f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.06f, 0.1f);
+            main.startColor = new ParticleSystem.MinMaxGradient(SparkHot, SparkWarm);
+            main.gravityModifier = 0.5f;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            ParticleSystem.EmissionModule emission = sparks.emission;
+            emission.enabled = false;
+            ParticleSystem.ShapeModule shape = sparks.shape;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.1f;
+            sparkObject.GetComponent<ParticleSystemRenderer>().sharedMaterial = BattleEnvironment.DustMaterial();
+            return sparks;
         }
 
         private TextMeshPro MakeLabel(string text, float fontSize, Vector3 localPosition)

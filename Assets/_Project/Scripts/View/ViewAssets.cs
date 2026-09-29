@@ -13,6 +13,8 @@ namespace ProjectVoid.View
         public Material tileMaterial;
         public Material unitMaterial;
         public Sprite placeholderSprite;
+        public BattleSounds sounds;
+        public Sprite projectileSprite;
 
         [NonSerialized] private Sprite _white;
         [NonSerialized] private Sprite _shadow;

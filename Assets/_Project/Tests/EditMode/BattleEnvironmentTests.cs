@@ -126,6 +126,32 @@ namespace ProjectVoid.Tests
             Assert.Less(Quaternion.Angle(expected, prop.transform.rotation), 0.1f, "yaw is applied on top of the model's own rotation");
         }
 
+        // 유닛과 같은 픽셀아트 2D 소품: 카메라를 향한 판으로 서서 지정한 높이로 바닥에 붙는다.
+        [Test]
+        public void SpritePropStandsAsABillboardOnTheFloor()
+        {
+            var texture = new Texture2D(32, 64);
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, 32, 64), new Vector2(0.5f, 0f), 64f);
+            EncounterData encounter = Make.Asset<EncounterData>();
+            encounter.props.Add(new PropPlacement { sprite = sprite, position = new Vector3(-5f, 0f, 3f), height = 2f });
+            ViewAssets assets = TestAssets.Load();
+            BattleEnvironment env = BattleEnvironment.Build(_parent.transform, Layout(), encounter, assets.tileMaterial, assets.unitMaterial);
+            Assert.AreEqual(1, env.Props.Count);
+            GameObject prop = env.Props[0];
+            Assert.IsNotNull(prop.GetComponent<Billboard>(), "faces the camera like units");
+            Assert.IsTrue(prop.GetComponent<Billboard>().yAxisOnly, "does not lean back");
+            Renderer renderer = prop.GetComponentInChildren<Renderer>();
+            Assert.AreSame(texture, renderer.sharedMaterial.GetTexture("_BaseMap"), "shows the sprite");
+            Assert.AreEqual(2f, renderer.bounds.size.y, 0.01f, "scaled to the requested height");
+            Assert.AreEqual(1f, renderer.bounds.size.x, 0.01f, "keeps the sprite's aspect");
+            Assert.AreEqual(-Board3D.TileThickness, renderer.bounds.min.y, 0.01f, "rests on the floor");
+            Assert.AreEqual(-5f, prop.transform.position.x, 0.01f);
+            Assert.AreEqual(3f, prop.transform.position.z, 0.01f);
+            Assert.AreEqual(0, prop.GetComponentsInChildren<Collider>().Length, "props must not catch board clicks");
+            Assert.AreNotEqual(UnityEngine.Rendering.ShadowCastingMode.Off, renderer.shadowCastingMode);
+            Object.DestroyImmediate(texture);
+        }
+
         // 벽 텍스처 아래쪽에 그려진 바닥 줄 때문에 바닥이 두 번 보였다.
         [Test]
         public void WallTextureSkipsItsPaintedFloorStrip()

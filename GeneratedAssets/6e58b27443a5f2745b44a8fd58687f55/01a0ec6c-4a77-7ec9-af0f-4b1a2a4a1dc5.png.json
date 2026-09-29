@@ -1,0 +1,41 @@
+{
+    "asset": "6e58b27443a5f2745b44a8fd58687f55",
+    "fileName": "01a0ec6c-4a77-7ec9-af0f-4b1a2a4a1dc5.png",
+    "prompt": "Pixel art game prop sprite in the exact art style of the reference image: 1-pixel black outline, limited palette, soft shading, same pixel density, 3/4 view, a single object, centered, on a plain flat white background, no characters. A short section of yellow steel safety railing with two posts.",
+    "negativePrompt": "",
+    "model": "gpt-image-1-5",
+    "modelName": "GPT Image 1.5",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "9e409c2ac15f23d4db947d8774e5f7bc",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

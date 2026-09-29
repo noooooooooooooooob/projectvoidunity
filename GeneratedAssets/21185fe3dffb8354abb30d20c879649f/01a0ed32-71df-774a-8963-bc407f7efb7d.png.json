@@ -1,0 +1,41 @@
+{
+    "asset": "21185fe3dffb8354abb30d20c879649f",
+    "fileName": "01a0ed32-71df-774a-8963-bc407f7efb7d.png",
+    "prompt": "Pixel art game projectile sprite in the exact art style of the reference image: 1-pixel black outline, limited palette, same pixel density. A single wooden arrow with a steel arrowhead and white feather fletching, perfectly horizontal, pointing to the right, side view, centered, on a plain flat white background, no characters, no bow.",
+    "negativePrompt": "",
+    "model": "gpt-image-1-5",
+    "modelName": "GPT Image 1.5",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "9e409c2ac15f23d4db947d8774e5f7bc",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

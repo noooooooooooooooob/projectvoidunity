@@ -1,0 +1,15 @@
+{
+    "asset": "105e72c3187cc144880390e3f67de21a",
+    "fileName": "01a0ec97-2fb3-78b3-a6b8-3360f2a2b707.wav",
+    "prompt": "Final killing blow, deep heavy bass impact boom with a crunchy hit and a body falling to the ground, dramatic retro game defeat sound effect, no music, no voice",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 1.0,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

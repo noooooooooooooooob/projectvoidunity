@@ -24,6 +24,7 @@ namespace ProjectVoid.View
         public const float HopPeak = 0.55f;
         public const float HopLand = 0.9f;
         public const float HitImpact = 0.15f;
+        public const float KnockbackPeak = 0.15f;
 
         private static readonly float[] AttackTimes = { 0f, AttackWindupEnd, AttackStrike, 0.75f, 1f };
         private static readonly float[] AttackStretch = { 0f, -0.12f, 0.12f, -0.03f, 0f };
@@ -35,6 +36,9 @@ namespace ProjectVoid.View
         private static readonly float[] HopStretch = { 0f, -0.15f, 0.1f, 0.03f, 0.02f, -0.12f, 0f };
         private static readonly float[] HopHeightTimes = { 0f, HopCrouch, HopPeak, 0.85f, 1f };
         private static readonly float[] HopHeightValues = { 0f, 0f, 0.25f, 0f, 0f };
+
+        private static readonly float[] KnockbackTimes = { 0f, KnockbackPeak, 0.6f, 1f };
+        private static readonly float[] KnockbackValues = { 0f, 1f, 0f, 0f };
 
         private static readonly float[] HitTimes = { 0f, HitImpact, 0.5f, 1f };
         private static readonly float[] HitStretch = { 0f, -0.1f, 0.03f, 0f };
@@ -55,6 +59,9 @@ namespace ProjectVoid.View
 
         public static Pose Hit(float t)
             => new Pose { stretch = Eval(HitTimes, HitStretch, t), lean = Eval(HitTimes, HitLean, t) };
+
+        /// <summary>맞아서 밀려난 정도 (0 = 제자리, 1 = 끝까지). 확 밀렸다가 천천히 돌아온다.</summary>
+        public static float KnockbackReach(float t) => Eval(KnockbackTimes, KnockbackValues, t);
 
         // 처음엔 천천히, 끝에서 빠르게 넘어간다.
         public static Pose Death(float t) => new Pose { lean = DeathLean * t * t };

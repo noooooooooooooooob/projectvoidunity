@@ -21,11 +21,16 @@ namespace ProjectVoid.View
         public string Text { get; }
     }
 
-    /// <summary>3D 진영 타일, 유닛 뷰, 타일 상태 표시, 마우스 클릭·호버 판정.</summary>
+    /// <summary>
+    /// 진영 타일, 유닛 뷰, 타일 상태 표시, 마우스 클릭·호버 판정.
+    /// 이름과 달리 두 방식을 모두 그린다: Perspective3D(바닥에 박힌 3D 판) 와 Flat2D(화면을 향한 평면 판, 정사영).
+    /// </summary>
     public sealed class Board3D : MonoBehaviour
     {
         public enum TileState { Base, Empty, Current, Valid, Invalid, Movable, ShapeHit, ShapeOut }
 
+        // 2D 에서 타일은 발보다 이만큼 뒤에 둬서 유닛 발이 타일 위에 그려지게 한다.
+        public const float FlatTileDepth = 0.02f;
         // 레퍼런스처럼 바닥에 박힌 얇은 판. 칸 사이 틈(CellPitch - TileSize)으로 바닥이 보여 테두리 역할을 한다.
         public const float TileThickness = 0.08f;
         private const float RayLength = 100f;
@@ -39,6 +44,16 @@ namespace ProjectVoid.View
         private static readonly Color MoveEmission = new Color(0.45f, 0.65f, 1f);
         private static readonly Color ShapeHitEmission = new Color(0.95f, 0.95f, 0.95f);
         private static readonly Color ShapeOutEmission = new Color(1f, 0.5f, 0.15f);
+        // 2D 칸 표시: 흰 표시에 곱하는 색. 알파가 곧 진하기라 빈 칸은 테두리만 은은하게 남는다.
+        private static readonly Color FlatEmptyColor = new Color(1f, 1f, 1f, 0.14f);
+        private static readonly Color FlatBaseColor = new Color(1f, 1f, 1f, 0.26f);
+        private static readonly Color FlatInvalidColor = new Color(0.15f, 0.15f, 0.18f, 0.4f);
+        private const float FlatHighlightAlpha = 0.6f;
+        private const int FlatMarkingPixels = 32;
+        private const int FlatMarkingBorder = 2;
+        private const float FlatMarkingFill = 0.45f;
+        private static Texture2D _flatMarking;
+        private static Material _flatMarkingMaterial;
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
@@ -68,9 +83,20 @@ namespace ProjectVoid.View
         public Func<bool> UiDragActive { get; set; }
         public int TileCount => _tiles.Count;
 
-        public void Build(BattleState state, ViewAssets assets, Texture2D allyTileTexture = null, Texture2D enemyTileTexture = null)
+        public BoardProjection Projection { get; private set; }
+
+        /// <summary>2D 에서 뒤 행 유닛은 바닥 원근에 맞춰 조금 작게. 3D 는 카메라 원근이 맡으므로 1.</summary>
+        public float UnitScale(Team team, Vector2Int cell)
+            => Projection == BoardProjection.Flat2D ? Layout.FlatScaleAt(Layout.CellPosition(team, cell).z) : 1f;
+
+        /// <summary>투영을 반영한 칸 중심 (유닛 발 위치).</summary>
+        public Vector3 CellWorldPosition(Team team, Vector2Int cell) => Layout.WorldCell(team, cell, Projection);
+
+        public void Build(BattleState state, ViewAssets assets, Texture2D allyTileTexture = null, Texture2D enemyTileTexture = null,
+            BoardProjection projection = BoardProjection.Perspective3D)
         {
             _assets = assets;
+            Projection = projection;
             _allyTileTexture = allyTileTexture;
             _enemyTileTexture = enemyTileTexture;
             Layout = new BoardLayout(state.Resolver.AllyGrid, state.Resolver.EnemyGrid);
@@ -81,8 +107,9 @@ namespace ProjectVoid.View
                 var viewObject = new GameObject($"Unit {unit.UnitId} {unit.Data.id}");
                 viewObject.transform.SetParent(transform, false);
                 var view = viewObject.AddComponent<UnitView>();
-                view.Setup(unit, unit.Data.sprite != null ? unit.Data.sprite : assets.placeholderSprite, assets);
-                view.SetHome(Layout.CellPosition(unit.Team, unit.Cell));
+                view.Setup(unit, unit.Data.sprite != null ? unit.Data.sprite : assets.placeholderSprite, assets, projection);
+                view.SetHome(CellWorldPosition(unit.Team, unit.Cell));
+                view.transform.localScale = Vector3.one * UnitScale(unit.Team, unit.Cell);
                 Tag(view.PickTag, unit.Team, unit.Cell);
                 _views[unit] = view;
             }
@@ -99,7 +126,8 @@ namespace ProjectVoid.View
             foreach (Unit unit in state.Units)
             {
                 UnitView view = _views[unit];
-                view.SetHome(Layout.CellPosition(unit.Team, unit.Cell));
+                view.SetHome(CellWorldPosition(unit.Team, unit.Cell));
+                view.transform.localScale = Vector3.one * UnitScale(unit.Team, unit.Cell);
                 Tag(view.PickTag, unit.Team, unit.Cell);
                 view.ResetPose();
                 view.SetStats(unit.Hp, unit.Data.maxHp, unit.Block);
@@ -182,7 +210,8 @@ namespace ProjectVoid.View
             SetTileState(unit.Team, toCell, TileState.Current);
             UnitView view = ViewFor(unit);
             Tag(view.PickTag, unit.Team, toCell);
-            Vector3 target = Layout.CellPosition(unit.Team, toCell);
+            view.transform.localScale = Vector3.one * UnitScale(unit.Team, toCell);
+            Vector3 target = CellWorldPosition(unit.Team, toCell);
             if (animate)
             {
                 yield return view.SlideTo(target);
@@ -342,6 +371,11 @@ namespace ProjectVoid.View
         private void SetTileState(Team team, Vector2Int cell, TileState state)
         {
             _tileStates[(team, cell)] = state;
+            if (Projection == BoardProjection.Flat2D)
+            {
+                _tiles[(team, cell)].sharedMaterial.color = FlatTileColor(state);
+                return;
+            }
             Material material = _tiles[(team, cell)].sharedMaterial;
             Color baseColor = TileTexture(team) != null ? TexturedTileTint : team == Team.Ally ? AllyTileColor : EnemyTileColor;
             Color albedo = baseColor;
@@ -361,6 +395,75 @@ namespace ProjectVoid.View
             material.SetColor(EmissionColorId, emission);
         }
 
+        private static Color FlatTileColor(TileState state)
+        {
+            switch (state)
+            {
+                case TileState.Base: return FlatBaseColor;
+                case TileState.Invalid: return FlatInvalidColor;
+                case TileState.Current: return WithAlpha(CurrentEmission, FlatHighlightAlpha);
+                case TileState.Valid: return WithAlpha(ValidEmission, FlatHighlightAlpha);
+                case TileState.Movable: return WithAlpha(MoveEmission, FlatHighlightAlpha);
+                case TileState.ShapeHit: return WithAlpha(ShapeHitEmission, FlatHighlightAlpha);
+                case TileState.ShapeOut: return WithAlpha(ShapeOutEmission, FlatHighlightAlpha);
+                default: return FlatEmptyColor;
+            }
+        }
+
+        private static Color WithAlpha(Color color, float alpha) => new Color(color.r, color.g, color.b, alpha);
+
+        // 칸 네 모서리를 바닥 원근에 올린 사다리꼴. 모두 같은 깊이(발보다 조금 뒤)라 화면 평면에 눕는다. 앞면은 카메라(-Z) 쪽.
+        private Mesh FlatTileMesh(Team team, Vector2Int cell)
+        {
+            Vector3 center = Layout.CellPosition(team, cell);
+            float half = BoardLayout.TileSize / 2f;
+            float depth = center.z * BoardLayout.FlatDepthPerUnit + FlatTileDepth;
+            Vector3 Corner(float dx, float dz)
+            {
+                Vector3 point = Layout.FlatFloorPoint(center.x + dx, center.z + dz);
+                return new Vector3(point.x, point.y, depth);
+            }
+            var mesh = new Mesh { name = $"Tile {team} {cell.x},{cell.y}" };
+            mesh.vertices = new[] { Corner(-half, -half), Corner(half, -half), Corner(half, half), Corner(-half, half) };
+            mesh.uv = new[] { new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(0f, 1f) };
+            mesh.triangles = new[] { 0, 3, 2, 0, 2, 1 };
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+            return mesh;
+        }
+
+        // 반투명 표시용 공용 머티리얼 (타일마다 복사해 색만 바꾼다). 스프라이트 셰이더라 조명 없이 제 색 그대로다.
+        private static Material FlatMarkingMaterial()
+        {
+            if (_flatMarkingMaterial == null)
+            {
+                _flatMarkingMaterial = new Material(Shader.Find("Sprites/Default")) { mainTexture = FlatMarking() };
+            }
+            return _flatMarkingMaterial;
+        }
+
+        // 흰 표시: 테두리는 진하고 안쪽은 옅다. 캐릭터와 비슷한 픽셀 크기라 점 필터로 그린다.
+        private static Texture2D FlatMarking()
+        {
+            if (_flatMarking != null)
+            {
+                return _flatMarking;
+            }
+            const int size = FlatMarkingPixels;
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    bool border = x < FlatMarkingBorder || y < FlatMarkingBorder || x >= size - FlatMarkingBorder || y >= size - FlatMarkingBorder;
+                    texture.SetPixel(x, y, new Color(1f, 1f, 1f, border ? 1f : FlatMarkingFill));
+                }
+            }
+            texture.Apply();
+            _flatMarking = texture;
+            return _flatMarking;
+        }
+
         private Texture2D TileTexture(Team team) => team == Team.Ally ? _allyTileTexture : _enemyTileTexture;
 
         // Godot Color.darkened: 검정 쪽으로 amount 만큼.
@@ -374,19 +477,43 @@ namespace ProjectVoid.View
                 for (int col = 0; col < grid.x; col++)
                 {
                     var cell = new Vector2Int(col, row);
-                    Vector3 top = Layout.CellPosition(team, cell);
+                    Vector3 top = CellWorldPosition(team, cell);
 
-                    GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    tile.name = $"Tile {team} {col},{row}";
-                    tile.transform.SetParent(transform, false);
-                    tile.transform.localScale = new Vector3(BoardLayout.TileSize, TileThickness, BoardLayout.TileSize);
-                    tile.transform.position = top - new Vector3(0f, TileThickness / 2f, 0f);
-                    var renderer = tile.GetComponent<Renderer>();
-                    // 타일마다 색이 달라지므로 머티리얼을 복사해 쓴다.
-                    renderer.sharedMaterial = new Material(_assets.tileMaterial);
-                    if (TileTexture(team) != null)
+                    GameObject tile;
+                    if (Projection == BoardProjection.Flat2D)
                     {
-                        renderer.sharedMaterial.mainTexture = TileTexture(team);
+                        // 바닥 원근을 따르는 사다리꼴 표시. 같은 메시로 클릭도 판정한다.
+                        tile = new GameObject();
+                        tile.transform.SetParent(transform, false);
+                        Mesh mesh = FlatTileMesh(team, cell);
+                        tile.AddComponent<MeshFilter>().sharedMesh = mesh;
+                        tile.AddComponent<MeshRenderer>();
+                        tile.AddComponent<MeshCollider>().sharedMesh = mesh;
+                    }
+                    else
+                    {
+                        tile = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        tile.transform.SetParent(transform, false);
+                        tile.transform.localScale = new Vector3(BoardLayout.TileSize, TileThickness, BoardLayout.TileSize);
+                        tile.transform.position = top - new Vector3(0f, TileThickness / 2f, 0f);
+                    }
+                    tile.name = $"Tile {team} {col},{row}";
+                    Renderer renderer;
+                    if (Projection == BoardProjection.Flat2D)
+                    {
+                        renderer = tile.GetComponent<MeshRenderer>();
+                        renderer.sharedMaterial = new Material(FlatMarkingMaterial());
+                        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    }
+                    else
+                    {
+                        renderer = tile.GetComponent<Renderer>();
+                        // 타일마다 색이 달라지므로 머티리얼을 복사해 쓴다.
+                        renderer.sharedMaterial = new Material(_assets.tileMaterial);
+                        if (TileTexture(team) != null)
+                        {
+                            renderer.sharedMaterial.mainTexture = TileTexture(team);
+                        }
                     }
                     Tag(tile.AddComponent<CellTag>(), team, cell);
 

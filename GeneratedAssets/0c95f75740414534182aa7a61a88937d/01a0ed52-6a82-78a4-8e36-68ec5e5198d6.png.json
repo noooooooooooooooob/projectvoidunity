@@ -1,0 +1,41 @@
+{
+    "asset": "0c95f75740414534182aa7a61a88937d",
+    "fileName": "01a0ed52-6a82-78a4-8e36-68ec5e5198d6.png",
+    "prompt": "Pixel art game battle background in the pixel art style of the reference image (limited palette, crisp pixels, 1-pixel dark outlines on objects), no characters, no people, no text, no UI. Interior of a dark abandoned industrial warehouse seen from a high three-quarter top-down angle, like a tactics RPG battle room. The back wall with tall grimy windows fills the top quarter of the image, warm dusty light beams slanting through the windows onto the floor. The rest is a wide worn grey concrete floor with cracks and oil stains; the center of the floor is left open and empty for the battle grid. Along the left and right edges and back wall: stacked wooden crates, rusty oil drums, a yellow safety railing, cardboard boxes on a pallet. Moody, gritty, dim lighting, cool desaturated tones with warm light.",
+    "negativePrompt": "",
+    "model": "gpt-image-1-5",
+    "modelName": "GPT Image 1.5",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "9e409c2ac15f23d4db947d8774e5f7bc",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

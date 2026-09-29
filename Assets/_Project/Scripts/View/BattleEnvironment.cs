@@ -42,7 +42,8 @@ namespace ProjectVoid.View
         public List<SpriteRenderer> LightShafts { get; } = new List<SpriteRenderer>();
 
         /// <summary>인카운터에 바닥·벽 텍스처와 소품이 하나도 없으면 null.</summary>
-        public static BattleEnvironment Build(Transform parent, BoardLayout layout, EncounterData encounter, Material baseMaterial)
+        public static BattleEnvironment Build(Transform parent, BoardLayout layout, EncounterData encounter, Material baseMaterial,
+            Material spriteMaterial = null)
         {
             if (encounter.groundTexture == null && encounter.wallTexture == null && encounter.props.Count == 0)
             {
@@ -89,12 +90,43 @@ namespace ProjectVoid.View
 
             foreach (PropPlacement placement in encounter.props)
             {
-                if (placement.prefab != null)
+                if (placement.sprite != null && spriteMaterial != null)
+                {
+                    environment.Props.Add(SpriteProp(root.transform, placement, floorY, spriteMaterial));
+                }
+                else if (placement.prefab != null)
                 {
                     environment.Props.Add(Prop(root.transform, placement, floorY));
                 }
             }
             return environment;
+        }
+
+        // 유닛과 같은 방식: SpriteRenderer 는 Lit 조명·그림자를 제대로 받지 못해 사각형에 텍스처를 입힌다.
+        private static GameObject SpriteProp(Transform parent, PropPlacement placement, float floorY, Material spriteMaterial)
+        {
+            Sprite sprite = placement.sprite;
+            var prop = new GameObject(sprite.name);
+            prop.transform.SetParent(parent, false);
+            prop.transform.position = new Vector3(placement.position.x, floorY, placement.position.z);
+            var billboard = prop.AddComponent<Billboard>();
+            billboard.yAxisOnly = true;
+            billboard.tiltDeg = UnitView.BodyTiltDeg;
+
+            GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            quad.name = "Sprite";
+            quad.transform.SetParent(prop.transform, false);
+            DestroyCollider(quad.GetComponent<Collider>());
+            float aspect = sprite.rect.width / sprite.rect.height;
+            quad.transform.localScale = new Vector3(placement.height * aspect, placement.height, 1f);
+            quad.transform.localPosition = new Vector3(0f, placement.height / 2f, 0f);
+            var material = new Material(spriteMaterial);
+            material.SetTexture("_BaseMap", sprite.texture);
+            var renderer = quad.GetComponent<MeshRenderer>();
+            renderer.sharedMaterial = material;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
+            renderer.receiveShadows = false;
+            return prop;
         }
 
         private static GameObject Prop(Transform parent, PropPlacement placement, float floorY)
@@ -208,7 +240,8 @@ namespace ProjectVoid.View
 
         private static Material _dustMaterial;
 
-        private static Material DustMaterial()
+        /// <summary>빛에 더해지는 반투명 파티클 머티리얼 (먼지·타격 불꽃이 같이 쓴다).</summary>
+        internal static Material DustMaterial()
         {
             if (_dustMaterial != null)
             {

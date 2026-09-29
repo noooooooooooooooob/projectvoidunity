@@ -5,6 +5,15 @@ namespace ProjectVoid.Tests
 {
     public class UnitMotionTests
     {
+        // 맞은 쪽이 확 밀렸다가 천천히 제자리로 돌아온다.
+        [Test]
+        public void KnockbackShovesFastThenReturns()
+        {
+            Assert.AreEqual(0f, UnitMotion.KnockbackReach(0f), 1e-4f);
+            Assert.AreEqual(1f, UnitMotion.KnockbackReach(UnitMotion.KnockbackPeak), 1e-4f);
+            Assert.AreEqual(0f, UnitMotion.KnockbackReach(1f), 1e-4f);
+        }
+
         private static void AssertRest(UnitMotion.Pose pose, string what)
         {
             Assert.AreEqual(0f, pose.stretch, 1e-4f, what + " stretch");

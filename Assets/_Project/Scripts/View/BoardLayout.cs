@@ -12,6 +12,37 @@ namespace ProjectVoid.View
         public const float TileSize = 1f;
         public const float CellPitch = 1.1f;
         public const float SideGap = 1.5f;
+        public const float FlatRowScale = 0.6f;
+        public const float FlatDepthPerUnit = 0.1f;
+        // 2D 바닥 원근: 앞 가장자리에서 이만큼(레이아웃 단위) 들어가면 크기가 절반이 되는 정도의 세기,
+        // 그리고 소실점이 앞 가장자리보다 얼마나 위(화면 단위)에 있는지. 배경 바닥 원근선에 맞춘 값.
+        public const float FlatPerspectiveDepth = 10f;
+        public const float FlatVanishHeight = 9f;
+
+        /// <summary>2D 에서 레이아웃 깊이 z 의 바닥이 그려지는 크기 (앞 가장자리 = 1, 뒤로 갈수록 작다).</summary>
+        public float FlatScaleAt(float layoutZ) => FlatPerspectiveDepth / (FlatPerspectiveDepth + layoutZ + Depth() / 2f);
+
+        /// <summary>
+        /// 2D(XY 화면 평면) 바닥 위의 점: 보드 가운데 위쪽 소실점을 향해 모이는 한 점 원근.
+        /// 먼 곳(+z)일수록 화면 위로 오르고 가운데로 모이며, 조금 더 깊이 둬서 앞 행 유닛이 그 위에 그려지게 한다.
+        /// </summary>
+        public Vector3 FlatFloorPoint(float layoutX, float layoutZ)
+        {
+            float scale = FlatScaleAt(layoutZ);
+            float center = Center().x;
+            float nearY = -Depth() / 2f * FlatRowScale;
+            return new Vector3(center + (layoutX - center) * scale, nearY + FlatVanishHeight * (1f - scale), layoutZ * FlatDepthPerUnit);
+        }
+
+        /// <summary>보드 폭·높이가 margin 배 여유를 두고 들어오는 정사영 카메라 크기 (화면 세로의 절반).</summary>
+        public static float FlatOrthoSize(float width, float height, float aspect, float margin)
+            => Mathf.Max(height * margin / 2f, width * margin / 2f / aspect);
+
+        public Vector3 WorldCell(Team team, Vector2Int cell, BoardProjection projection)
+        {
+            Vector3 position = CellPosition(team, cell);
+            return projection == BoardProjection.Flat2D ? FlatFloorPoint(position.x, position.z) : position;
+        }
 
         public BoardLayout(Vector2Int allyGrid, Vector2Int enemyGrid)
         {

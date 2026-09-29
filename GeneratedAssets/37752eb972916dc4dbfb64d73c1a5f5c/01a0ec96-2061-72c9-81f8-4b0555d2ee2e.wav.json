@@ -1,0 +1,15 @@
+{
+    "asset": "37752eb972916dc4dbfb64d73c1a5f5c",
+    "fileName": "01a0ec96-2061-72c9-81f8-4b0555d2ee2e.wav",
+    "prompt": "Fast sword swing whoosh through the air, short and sharp, retro game combat sound effect, no impact, no music",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 0.6000000238418579,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

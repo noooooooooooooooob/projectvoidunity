@@ -33,27 +33,49 @@ MonoBehaviour:
   allyTileTexture: {fileID: 2800000, guid: 729116e47db0ab943885d6f8a427ae3f, type: 3}
   enemyTileTexture: {fileID: 2800000, guid: cf57eef8248f21843ae0d1f7120d531b, type: 3}
   props:
-  - prefab: {fileID: 1668477920299643764, guid: 68c3941f2b17ae1419f7697d9e374377, type: 3}
+  - sprite: {fileID: 21300000, guid: 0c2f1bcb27bf383429283a2bccc91858, type: 3}
+    prefab: {fileID: 1668477920299643764, guid: 68c3941f2b17ae1419f7697d9e374377, type: 3}
     position: {x: -5.8, y: 0, z: 2.7}
     yaw: 20
     height: 1.6
-  - prefab: {fileID: 1668477920299643764, guid: 68c3941f2b17ae1419f7697d9e374377, type: 3}
+  - sprite: {fileID: 21300000, guid: 0c2f1bcb27bf383429283a2bccc91858, type: 3}
+    prefab: {fileID: 1668477920299643764, guid: 68c3941f2b17ae1419f7697d9e374377, type: 3}
     position: {x: -5.3, y: 0, z: -1.5}
     yaw: -15
     height: 1.1
-  - prefab: {fileID: 8334141188905320131, guid: c34de1b78215ac04b837eb1c9cd4457d, type: 3}
+  - sprite: {fileID: 21300000, guid: d6be92fc05a06994d913468b89958872, type: 3}
+    prefab: {fileID: 8334141188905320131, guid: c34de1b78215ac04b837eb1c9cd4457d, type: 3}
     position: {x: -0.6, y: 0, z: 3.2}
     yaw: -45
     height: 1
-  - prefab: {fileID: 6545697366226700785, guid: 6a6993d17d894f14b848e24b2d2ef70e, type: 3}
+  - sprite: {fileID: 21300000, guid: 4b4692db4ca3d3b488e2f5dd9de9664d, type: 3}
+    prefab: {fileID: 6545697366226700785, guid: 6a6993d17d894f14b848e24b2d2ef70e, type: 3}
     position: {x: 4.3, y: 0, z: 2.9}
     yaw: 0
     height: 1.1
-  - prefab: {fileID: 6545697366226700785, guid: 6a6993d17d894f14b848e24b2d2ef70e, type: 3}
+  - sprite: {fileID: 21300000, guid: 4b4692db4ca3d3b488e2f5dd9de9664d, type: 3}
+    prefab: {fileID: 6545697366226700785, guid: 6a6993d17d894f14b848e24b2d2ef70e, type: 3}
     position: {x: 5, y: 0, z: 2.2}
     yaw: 60
     height: 1.1
-  - prefab: {fileID: 6457437410087378075, guid: 37335f286be4bee4f9c8d168793031cf, type: 3}
+  - sprite: {fileID: 21300000, guid: a09fd2f5c0146214abb19f2b66619295, type: 3}
+    prefab: {fileID: 6457437410087378075, guid: 37335f286be4bee4f9c8d168793031cf, type: 3}
     position: {x: 3.9, y: 0, z: -1.9}
     yaw: -140
     height: 1.8
+  - sprite: {fileID: 21300000, guid: 45958cd3e9f39504d8302a00d65f033d, type: 3}
+    prefab: {fileID: 0}
+    position: {x: -3, y: 0, z: 3.4}
+    yaw: 0
+    height: 1
+  - sprite: {fileID: 21300000, guid: 462639f63e9741f46a4907f4e7072fab, type: 3}
+    prefab: {fileID: 0}
+    position: {x: 0.3, y: 0, z: -2.6}
+    yaw: 0
+    height: 1.6
+  - sprite: {fileID: 21300000, guid: b46047b168fa0794fba3cd508c3accc3, type: 3}
+    prefab: {fileID: 0}
+    position: {x: -6, y: 0, z: 0.6}
+    yaw: 0
+    height: 0.5
+  flatBackdrop: {fileID: 21300000, guid: f0646bd75dc1167409d60777b4b09efe, type: 3}

@@ -1,0 +1,15 @@
+{
+    "asset": "a91962ca9b541984096de6868e6664f1",
+    "fileName": "01a0ec96-8c86-7ae9-807d-99e2564ed8b0.wav",
+    "prompt": "Bow string twang and arrow release, crossbow shot, short sharp retro game sound effect, no impact, no music",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 0.6000000238418579,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

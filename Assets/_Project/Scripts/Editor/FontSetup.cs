@@ -54,7 +54,8 @@ namespace ProjectVoid.EditorTools
                 tile = new Material(Shader.Find("Universal Render Pipeline/Lit"));
                 AssetDatabase.CreateAsset(tile, TileMaterialPath);
             }
-            tile.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
+            // URP 의 머티리얼 검증은 GI 플래그가 None 이면 발광이 없다고 보고 _EMISSION 을 끈다. 실시간 발광으로 표시해 둔다.
+            tile.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
             // URP 는 발광 색이 완전한 검정이면 _EMISSION 을 꺼 버린다. 눈에 안 보이는 값으로 둔다.
             tile.SetColor("_EmissionColor", new Color(0.001f, 0.001f, 0.001f));
             // 런타임에 발광 색만 바꾸므로 키워드를 에셋에 켜 둬야 셰이더 변형이 빌드에 포함된다. 다른 설정 뒤에 켠다.
@@ -84,10 +85,14 @@ namespace ProjectVoid.EditorTools
             unit.SetFloat("_SpecularHighlights", 0f);
             unit.SetFloat("_EnvironmentReflections", 0f);
             unit.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
+            // 피격 흰 번쩍임은 런타임에 발광 색만 바꾼다. 키워드를 에셋에 켜 둬야 빌드에 그 셰이더 변형이 남는다 (Tile.mat 과 같은 이유).
+            unit.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            unit.SetColor("_EmissionColor", new Color(0.001f, 0.001f, 0.001f));
             // 키워드는 다른 설정 뒤에 켜야 저장된다 (Tile.mat 과 같은 이유).
             unit.EnableKeyword("_ALPHATEST_ON");
             unit.EnableKeyword("_SPECULARHIGHLIGHTS_OFF");
             unit.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
+            unit.EnableKeyword("_EMISSION");
             EditorUtility.SetDirty(unit);
             AssetDatabase.SaveAssetIfDirty(unit);
         }

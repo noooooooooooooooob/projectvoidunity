@@ -1,0 +1,15 @@
+{
+    "asset": "279afe3cbf2dd864aa4ccdd9f030ffcc",
+    "fileName": "01a0ec96-4dc6-7e7f-8fc8-27e31dc04454.wav",
+    "prompt": "Heavy punchy melee hit impact on a body, blade slash with a meaty thud, crunchy retro game combat hit sound effect, very short, no music",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 0.6000000238418579,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

@@ -47,6 +47,26 @@ namespace ProjectVoid.Tests
             Assert.AreEqual(0f, material.GetFloat("_Cull"), "both faces render (enemies are mirrored)");
         }
 
+        // 발광 키워드가 URP 의 머티리얼 검증(임포트·인스펙터가 부름)을 거친 뒤에도 남는지. GI 플래그가 None 이면 URP 가 꺼 버린다.
+        private static bool EmissionSurvivesValidation(Material material)
+        {
+            var copy = new Material(material);
+            BaseShaderGUI.SetMaterialKeywords(copy);
+            bool enabled = copy.IsKeywordEnabled("_EMISSION");
+            Object.DestroyImmediate(copy);
+            return enabled;
+        }
+
+        // 흰 번쩍임은 런타임에 발광 색만 바꾼다. 에셋에 키워드가 꺼지면 빌드에서 그 셰이더 변형이 빠져 번쩍임이 사라진다.
+        [Test]
+        public void UnitMaterialKeepsTheEmissionVariantForHitFlash()
+        {
+            var material = AssetDatabase.LoadAssetAtPath<Material>(FontSetup.UnitMaterialPath);
+            Assert.IsTrue(material.IsKeywordEnabled("_EMISSION"));
+            Assert.IsTrue(EmissionSurvivesValidation(material), "URP validation keeps emission on");
+            Assert.Less(material.GetColor("_EmissionColor").maxColorComponent, 0.01f, "no visible glow at rest");
+        }
+
         [Test]
         public void OverlayMaterialUsesOverlayShader()
         {
@@ -62,6 +82,7 @@ namespace ProjectVoid.Tests
             Assert.IsNotNull(material);
             Assert.AreEqual("Universal Render Pipeline/Lit", material.shader.name);
             Assert.IsTrue(material.IsKeywordEnabled("_EMISSION"));
+            Assert.IsTrue(EmissionSurvivesValidation(material), "tile highlights survive URP validation");
         }
     }
 }

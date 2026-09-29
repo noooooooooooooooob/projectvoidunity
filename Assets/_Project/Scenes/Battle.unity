@@ -155,6 +155,8 @@ MonoBehaviour:
     tileMaterial: {fileID: 2100000, guid: 5851f17a011f3be428d31c3b99b1efdd, type: 2}
     unitMaterial: {fileID: 2100000, guid: 75c043f63092847458d6e67e8655a6e1, type: 2}
     placeholderSprite: {fileID: 21300000, guid: 28ec458f65f96244a923efc4a583c123, type: 3}
+    sounds: {fileID: 11400000, guid: 29a23f1a634dc7d47ab7ae440edcd6ec, type: 2}
+    projectileSprite: {fileID: 21300000, guid: c2e553db4b977e445a1f25a186fa4b60, type: 3}
   battleCamera: {fileID: 1001740768}
   seed: 0
 --- !u!4 &392422939
@@ -310,6 +312,7 @@ GameObject:
   m_Component:
   - component: {fileID: 898853968}
   - component: {fileID: 898853967}
+  - component: {fileID: 898853969}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -397,6 +400,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &898853969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898853966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1001740767
 GameObject:
   m_ObjectHideFlags: 0

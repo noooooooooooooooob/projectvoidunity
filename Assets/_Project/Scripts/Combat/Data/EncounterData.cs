@@ -19,5 +19,7 @@ namespace ProjectVoid.Combat
         public Texture2D enemyTileTexture;
         // 방에 놓을 3D 소품. 보드 칸을 가리지 않는 가장자리에 둔다.
         public List<PropPlacement> props = new List<PropPlacement>();
+        // 2D 화면(Flat2D)의 방 배경 한 장. 비워 두면 카메라 배경색만 보인다.
+        public Sprite flatBackdrop;
     }
 }

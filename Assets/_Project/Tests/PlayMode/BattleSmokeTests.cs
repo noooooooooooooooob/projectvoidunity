@@ -36,6 +36,13 @@ namespace ProjectVoid.Tests
         }
 
         [UnityTest]
+        public IEnumerator BattleCameraHasHitEffects()
+        {
+            yield return WaitIdle(Root);
+            Assert.IsNotNull(Camera.main.GetComponent<BattleCamera>());
+        }
+
+        [UnityTest]
         public IEnumerator PlaysSkirmishToTheEnd()
         {
             BattleRoot root = Root;
@@ -83,7 +90,7 @@ namespace ProjectVoid.Tests
             Assert.AreEqual(1, fresh.State.RoundIndex, "new battle starts at round 1");
         }
 
-        private static bool TryPlayCard(BattleRoot root)
+        internal static bool TryPlayCard(BattleRoot root)
         {
             BattleState state = root.State;
             Unit actor = state.CurrentUnit();

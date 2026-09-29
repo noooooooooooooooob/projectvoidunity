@@ -14,6 +14,8 @@ namespace ProjectVoid.EditorTools
         public const string OutDir = "Assets/_Project/Art/Units";
         public const string AnimRawDir = "Assets/_Project/Art/Units/Anim/Raw";
         public const string AnimOutDir = "Assets/_Project/Art/Units/Anim";
+        public const string PropRawDir = "Assets/_Project/Art/Props/Raw";
+        public const string PropOutDir = "Assets/_Project/Art/Props";
         // AI 스프라이트시트는 4×4 칸 16프레임으로 나온다.
         public const int SheetGrid = 4;
         public const int BackgroundTolerance = 48;
@@ -328,10 +330,21 @@ namespace ProjectVoid.EditorTools
         [MenuItem("Project Void/Pixelize Raw Unit Sprites")]
         public static void ProcessAllRaw()
         {
-            foreach (string path in Directory.GetFiles(RawDir, "*.png"))
+            ProcessDirectory(RawDir, OutDir);
+        }
+
+        [MenuItem("Project Void/Pixelize Raw Prop Sprites")]
+        public static void ProcessAllRawProps()
+        {
+            ProcessDirectory(PropRawDir, PropOutDir);
+        }
+
+        private static void ProcessDirectory(string rawDir, string outDir)
+        {
+            foreach (string path in Directory.GetFiles(rawDir, "*.png"))
             {
                 string rawPath = path.Replace('\\', '/');
-                ProcessFile(rawPath, $"{OutDir}/{Path.GetFileName(rawPath)}", false);
+                ProcessFile(rawPath, $"{outDir}/{Path.GetFileName(rawPath)}", false);
             }
         }
     }

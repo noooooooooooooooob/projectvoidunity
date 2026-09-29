@@ -1,0 +1,15 @@
+{
+    "asset": "961fba3c4484b204fb2afbaf26bb0091",
+    "fileName": "01a0ec97-0897-7394-a896-ff66b821f8e2.wav",
+    "prompt": "Weapon deflected by a metal shield, sharp metallic clang with a short ring, blocked attack, retro game sound effect, no music",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 0.699999988079071,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

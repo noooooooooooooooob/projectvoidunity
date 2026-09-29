@@ -1,0 +1,15 @@
+{
+    "asset": "1b271f5cdd75f58468fa91cf46147b9f",
+    "fileName": "01a0ec96-cacd-799c-9e1c-28a714034be9.wav",
+    "prompt": "Arrow striking and piercing into a body with a sharp thunk, punchy retro game combat hit sound effect, very short, no music",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 0.6000000238418579,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

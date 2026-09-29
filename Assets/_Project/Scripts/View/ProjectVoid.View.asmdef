@@ -1,6 +1,6 @@
 {
     "name": "ProjectVoid.View",
     "rootNamespace": "ProjectVoid.View",
-    "references": ["ProjectVoid.Combat", "Unity.InputSystem", "Unity.TextMeshPro", "UnityEngine.UI"],
+    "references": ["ProjectVoid.Combat", "Unity.InputSystem", "Unity.TextMeshPro", "UnityEngine.UI", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime"],
     "autoReferenced": true
 }

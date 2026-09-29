@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed6fbd8a0a4c3314aa121baed9e15fbd, type: 3}
+  m_Name: battle_sounds
+  m_EditorClassIdentifier: ProjectVoid.View::ProjectVoid.View.BattleSounds
+  meleeSwing: {fileID: 8300000, guid: 37752eb972916dc4dbfb64d73c1a5f5c, type: 3}
+  meleeHit: {fileID: 8300000, guid: 279afe3cbf2dd864aa4ccdd9f030ffcc, type: 3}
+  rangedShot: {fileID: 8300000, guid: a91962ca9b541984096de6868e6664f1, type: 3}
+  rangedHit: {fileID: 8300000, guid: 1b271f5cdd75f58468fa91cf46147b9f, type: 3}
+  blocked: {fileID: 8300000, guid: 961fba3c4484b204fb2afbaf26bb0091, type: 3}
+  kill: {fileID: 8300000, guid: 105e72c3187cc144880390e3f67de21a, type: 3}

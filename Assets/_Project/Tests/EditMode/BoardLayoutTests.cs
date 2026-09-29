@@ -9,6 +9,34 @@ namespace ProjectVoid.Tests
     {
         private const float Eps = 1e-4f;
 
+        // 2D: 배경 바닥처럼 한 점 원근을 따른다. 뒤 행은 화면 위로, 보드 가운데 쪽으로 모이고, 앞 행 유닛이 그 위에 그려지도록 더 깊이 둔다.
+        [Test]
+        public void FlatProjectionFollowsTheFloorPerspective()
+        {
+            var layout = new BoardLayout(new Vector2Int(3, 3), new Vector2Int(2, 2));
+            Vector3 far = layout.WorldCell(Team.Ally, new Vector2Int(2, 0), BoardProjection.Flat2D);
+            Vector3 near = layout.WorldCell(Team.Ally, new Vector2Int(2, 2), BoardProjection.Flat2D);
+            float center = layout.Center().x;
+            Assert.Less(Mathf.Abs(far.x - center), Mathf.Abs(near.x - center), "far cells draw in toward the vanishing point");
+            Assert.Less(layout.FlatScaleAt(layout.CellPosition(Team.Ally, new Vector2Int(0, 0)).z), 1f, "far rows are smaller");
+            Assert.AreEqual(1f, layout.FlatScaleAt(-layout.Depth() / 2f), Eps, "the front edge keeps full size");
+            Vector3 mid = layout.WorldCell(Team.Ally, new Vector2Int(2, 1), BoardProjection.Flat2D);
+            Assert.Less(far.y - mid.y, mid.y - near.y, "rows get closer together further back");
+            Assert.Greater(far.y, near.y, "far row is higher on screen");
+            Assert.Greater(far.z, near.z, "far row is further from the camera");
+            Assert.AreEqual(layout.CellPosition(Team.Enemy, new Vector2Int(1, 0)),
+                layout.WorldCell(Team.Enemy, new Vector2Int(1, 0), BoardProjection.Perspective3D), "3D unchanged");
+        }
+
+        [Test]
+        public void FlatOrthoSizeFitsTheBoard()
+        {
+            float size = BoardLayout.FlatOrthoSize(10f, 4f, 16f / 9f, 1.2f);
+            Assert.GreaterOrEqual(size * 2f, 4f * 1.2f - Eps, "height fits");
+            Assert.GreaterOrEqual(size * 2f * 16f / 9f, 10f * 1.2f - Eps, "width fits");
+            Assert.Greater(BoardLayout.FlatOrthoSize(10f, 4f, 4f / 3f, 1.2f), size, "narrow screens need more room");
+        }
+
         [Test]
         public void SidesAreMirrored()
         {

@@ -19,6 +19,80 @@ namespace ProjectVoid.Tests
             Make.Cleanup();
         }
 
+        private (BattleState state, Board3D board) BuildFlatBoard()
+        {
+            var encounter = Make.Encounter(new Vector2Int(3, 3), new Vector2Int(2, 2),
+                new[] { Make.Place(Make.Ally("a", maxHp: 20, speed: 5, deck: new[] { Make.Card("c", damage: 1), Make.Card("c2", damage: 1), Make.Card("c3", damage: 1), Make.Card("c4", damage: 1) }), 0, 1) },
+                new[] { Make.Place(Make.Enemy("e", maxHp: 20, speed: 1), 0, 0), Make.Place(Make.Enemy("f", maxHp: 20, speed: 1), 1, 1) });
+            BattleState state = Make.State(encounter, 3);
+            _root = new GameObject("BoardTestRoot");
+            var board = _root.AddComponent<Board3D>();
+            board.Build(state, TestAssets.Load(), null, null, BoardProjection.Flat2D);
+            return (state, board);
+        }
+
+        [Test]
+        public void FlatTilesFollowTheFloorPerspective()
+        {
+            (BattleState state, Board3D board) = BuildFlatBoard();
+            Assert.AreEqual(BoardProjection.Flat2D, board.Projection);
+            Renderer far = board.TileRenderer(Team.Ally, new Vector2Int(0, 0));
+            Renderer near = board.TileRenderer(Team.Ally, new Vector2Int(0, 2));
+            Assert.Less(far.bounds.size.x, near.bounds.size.x - 0.05f, "far tiles are narrower");
+            Assert.Less(far.bounds.size.y, near.bounds.size.y, "and shallower");
+            Assert.Less(far.bounds.size.y, far.bounds.size.x, "rows are squashed to look down on the board");
+            Assert.Less(far.bounds.size.z, 1e-3f, "tiles lie flat in the screen plane");
+            Unit ally = state.Units[0];
+            Vector3 cell = board.CellWorldPosition(ally.Team, ally.Cell);
+            Assert.Less(Vector3.Distance(cell, board.ViewFor(ally).transform.position), 1e-4f, "unit stands on its cell");
+            Assert.Greater(far.bounds.center.z, board.CellWorldPosition(Team.Ally, new Vector2Int(0, 0)).z, "tile sits behind the feet");
+            Unit farEnemy = state.Units[1];
+            Unit nearEnemy = state.Units[2];
+            Assert.Less(board.ViewFor(farEnemy).transform.localScale.y, board.ViewFor(nearEnemy).transform.localScale.y, "units further back are a little smaller");
+            Assert.GreaterOrEqual(board.ViewFor(farEnemy).transform.localScale.y, 0.75f, "but still readable");
+        }
+
+        // 2D 칸은 불투명 회색 판이 아니라 바닥에 그린 표시: 반투명이라 배경 바닥이 비친다. 강조는 색과 진하기로.
+        [Test]
+        public void FlatTilesAreTranslucentFloorMarkings()
+        {
+            (BattleState state, Board3D board) = BuildFlatBoard();
+            Color empty = board.TileRenderer(Team.Enemy, new Vector2Int(1, 0)).sharedMaterial.color;
+            Assert.Less(empty.a, 0.5f, "background floor shows through");
+            Unit ally = state.Units[0];
+            board.ShowCurrent(ally.Team, ally.Cell);
+            Color current = board.TileRenderer(ally.Team, ally.Cell).sharedMaterial.color;
+            Assert.Greater(current.a, empty.a, "highlight is stronger than an empty cell");
+            Assert.Greater(current.r, current.b, "current turn is warm");
+            Assert.IsNotNull(board.transform.Find($"Tile {Team.Enemy} 1,0").GetComponent<Collider>(), "still clickable");
+        }
+
+        [Test]
+        public void FlatBoardPicksCellsWithAStraightRay()
+        {
+            (_, Board3D board) = BuildFlatBoard();
+            var cell = new Vector2Int(1, 2);
+            Vector3 target = board.CellWorldPosition(Team.Enemy, new Vector2Int(1, 1));
+            Assert.IsTrue(board.PickAt(new Ray(target + new Vector3(0f, 0f, -10f), Vector3.forward), out Team team, out Vector2Int picked));
+            Assert.AreEqual(Team.Enemy, team);
+            Assert.AreEqual(new Vector2Int(1, 1), picked);
+            target = board.CellWorldPosition(Team.Ally, cell);
+            Assert.IsTrue(board.PickAt(new Ray(target + new Vector3(0f, 0f, -10f), Vector3.forward), out team, out picked));
+            Assert.AreEqual(Team.Ally, team);
+            Assert.AreEqual(cell, picked);
+        }
+
+        [Test]
+        public void FlatUnitsStandUprightWithFlatShadows()
+        {
+            (BattleState state, Board3D board) = BuildFlatBoard();
+            UnitView view = board.ViewFor(state.Units[0]);
+            Assert.IsNull(view.transform.Find("Body").GetComponent<Billboard>(), "no billboard tilt in 2D");
+            Transform shadow = view.transform.Find("Shadow");
+            Assert.Less(Vector3.Angle(shadow.forward, Vector3.forward), 1f, "shadow lies in the screen plane");
+            Assert.Greater(shadow.position.z, view.transform.position.z, "shadow is behind the body");
+        }
+
         private (BattleState state, Board3D board) BuildBoard(Texture2D allyTexture = null, Texture2D enemyTexture = null)
         {
             var encounter = Make.Encounter(new Vector2Int(3, 3), new Vector2Int(2, 2),
@@ -250,6 +324,36 @@ namespace ProjectVoid.Tests
             Assert.AreEqual(Vector3.one, view.PoseTransform.localScale, "no squash on top of drawn frames");
             view.ResetPose();
             Assert.AreSame(idle, view.BodyMaterial.GetTexture("_BaseMap"), "back to idle");
+        }
+
+        // 공격 32fps·피격 40fps 로 16장이 스쳐 지나가 그림이 읽히지 않았다. 한 장이 최소 이만큼은 머물러야 한다.
+        [Test]
+        public void DrawnActionFramesAreHeldLongEnoughToRead()
+        {
+            int frames = ProjectVoid.EditorTools.PixelSpriteProcessor.SheetGrid * ProjectVoid.EditorTools.PixelSpriteProcessor.SheetGrid;
+            Assert.GreaterOrEqual(UnitView.AttackFrameTime / frames, 1f / 16f - 1e-5f, "attack at 16fps or slower");
+            Assert.GreaterOrEqual(UnitView.HitFrameTime / frames, 1f / 20f - 1e-5f, "hit at 20fps or slower");
+        }
+
+        // 붉은 틴트만으로는 맞은 순간이 약했다. 첫 순간은 완전한 흰색 + 불꽃.
+        [Test]
+        public void ImpactFlashesWhiteBrieflyAndThrowsSparks()
+        {
+            (BattleState state, Board3D board) = BuildBoard();
+            UnitView view = board.ViewFor(state.Units[0]);
+            view.StartImpact();
+            Assert.AreEqual(Color.white, view.BodyMaterial.GetColor("_EmissionColor"), "white flash");
+            Assert.Greater(view.Sparks.particleCount, 0, "sparks burst");
+            view.TickFlash(Time.realtimeSinceStartup + UnitView.HitWhiteTime + 0.01f);
+            Assert.AreEqual(Color.black, view.BodyMaterial.GetColor("_EmissionColor"), "flash ends on real time");
+        }
+
+        [Test]
+        public void DamageNumberPunchesThenSettles()
+        {
+            Assert.AreEqual(1.6f, UnitView.PopScale(0f, 1.6f), 1e-4f);
+            Assert.AreEqual(1f, UnitView.PopScale(0.5f, 1.6f), 1e-4f);
+            Assert.Greater(UnitView.KillPopPunch, UnitView.DamagePopPunch);
         }
 
         [Test]
