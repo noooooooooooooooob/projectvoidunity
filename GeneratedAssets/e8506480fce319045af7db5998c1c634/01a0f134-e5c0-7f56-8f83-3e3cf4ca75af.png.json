@@ -1,0 +1,50 @@
+{
+    "asset": "e8506480fce319045af7db5998c1c634",
+    "fileName": "01a0f134-e5c0-7f56-8f83-3e3cf4ca75af.png",
+    "prompt": "Pixel art game character sprite blending the two reference images' styles (style only, new character): bold 1-pixel black outline like the second reference (the lantern girl), but bright clean light palette and cute big-eyed chibi face like the first reference (the white-hooded girl). Chibi SD proportions about 2.5-3 heads tall. Low-resolution pixel art (character about 64px tall, upscaled with hard nearest-neighbor pixels), flat shading with 2-3 tones per color, limited palette, no anti-aliasing, no dithering. Character: a girl in a cream-white hooded cape with long floppy rabbit ears, short navy skirt and boots, holding a tall banner spear with a small golden bell and a pink pennant flag, a few pink sparkle particles around the bell. Pink is the single accent color. Front-facing idle standing pose, full body, centered, plain flat background.",
+    "negativePrompt": "",
+    "model": "gpt-image-1-5",
+    "modelName": "GPT Image 1.5",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 0,
+                "doodle": [],
+                "label": "Image 1",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "cee721c62b2968c45a6a04ad8a6a6352",
+                "unlabeledIndex": 0
+            },
+            {
+                "doodleReferenceType": 0,
+                "doodle": [],
+                "label": "Image 2",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "68c3ec5a68e4dec46b4a016ee484c646",
+                "unlabeledIndex": 1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

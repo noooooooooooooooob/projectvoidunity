@@ -1,0 +1,41 @@
+{
+    "asset": "964700ff9263f0b468ff8c6fafa28017",
+    "fileName": "01a0f13d-b679-7971-be0b-23deae32b3d9.png",
+    "prompt": "Idle animation sprite sheet of the EXACT same character as the reference image: identical design, colors, palette, pixel size, bold 1-pixel black outline, proportions and pose facing. Layout: a 2x2 grid of 4 equal cells, reading order left-to-right then top-to-bottom, one full-body character per cell, same scale and same ground line in every cell, character centered in each cell with generous padding, no overlap between cells, no grid lines, no text, no numbers. Animation: subtle looping idle breathing — frame 1 neutral; frame 2 body sinks 1-2 pixels and cloak hem flares slightly, bell swings slightly left, green spirit flames flicker smaller; frame 3 body rises back 1 pixel above neutral, bell swings right, flames taller; frame 4 returning to neutral, flames mid size. Feet stay planted, staff stays in the same hand and position, only small motion. Low-resolution pixel art upscaled with hard nearest-neighbor pixels, flat shading, no anti-aliasing, no dithering. Plain flat uniform grey background.",
+    "negativePrompt": "",
+    "model": "gemini-3.0-pro",
+    "modelName": "Gemini 3.0 Pro",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "8a5dae3060634214798baec4c76de04b",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

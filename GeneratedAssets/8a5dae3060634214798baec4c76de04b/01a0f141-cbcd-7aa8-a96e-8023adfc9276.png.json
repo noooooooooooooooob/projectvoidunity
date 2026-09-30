@@ -1,0 +1,41 @@
+{
+    "asset": "8a5dae3060634214798baec4c76de04b",
+    "fileName": "01a0f141-cbcd-7aa8-a96e-8023adfc9276.png",
+    "prompt": "Remove all the green spirit flames and all green spark particles floating around the character, filling those areas with the same plain flat grey background. Keep the character, antler hood, cloak, staff, skulls and bell exactly unchanged: same pixels, same colors, same black outline, same position and size. No new elements.",
+    "negativePrompt": "",
+    "model": "gemini-3.0-pro",
+    "modelName": "Gemini 3.0 Pro",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "8a5dae3060634214798baec4c76de04b",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

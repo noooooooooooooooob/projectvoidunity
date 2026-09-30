@@ -1,0 +1,41 @@
+{
+    "asset": "72660e0cb724eb74f9df970eca407e30",
+    "fileName": "01a0f142-6944-70fe-8a4d-48e2d1e33d68.png",
+    "prompt": "A single small eerie green spirit flame (will-o'-the-wisp) as a standalone pixel art sprite, in exactly the same pixel art style and green colors as the flames in the reference image. Teardrop flame shape pointing up, bright pale green core, mid green body, darker green edge, no black outline. Low-resolution pixel art (about 16px tall, upscaled with hard nearest-neighbor pixels), flat shading, no anti-aliasing, no glow haze. Only one flame, centered, nothing else, no character. Plain flat uniform grey background.",
+    "negativePrompt": "",
+    "model": "gemini-3.0-pro",
+    "modelName": "Gemini 3.0 Pro",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "8a5dae3060634214798baec4c76de04b",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

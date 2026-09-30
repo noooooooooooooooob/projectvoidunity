@@ -1,0 +1,41 @@
+{
+    "asset": "867c21c4fd5c96f4b9078de82fc802a6",
+    "fileName": "01a0f138-a5e1-70f5-8d76-6d47212d6868.png",
+    "prompt": "Pixel art game character sprite in the exact art style of the reference image (style only, new character): chibi SD proportions about 2.5-3 heads tall, big head, large eyes with highlights. NO black outline — edges defined only by darker tones of each color, soft bright clean look. Low-resolution pixel art (character about 64px tall, upscaled with hard nearest-neighbor pixels), flat shading with 2-3 tones per color, limited palette, no anti-aliasing, no dithering. Character: a girl wearing an oversized white hood with fox ears, fluffy white fox tail, pale lavender and white outfit with black stockings, holding a large crescent-moon scythe with a glowing mint-green blade. Mint green is the single accent color. Front-facing idle standing pose, full body, centered, plain flat background.",
+    "negativePrompt": "",
+    "model": "gemini-3.0-pro",
+    "modelName": "Gemini 3.0 Pro",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "cee721c62b2968c45a6a04ad8a6a6352",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

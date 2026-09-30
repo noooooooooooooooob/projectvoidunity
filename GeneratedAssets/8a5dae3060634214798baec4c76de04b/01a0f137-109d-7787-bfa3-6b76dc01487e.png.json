@@ -1,0 +1,41 @@
+{
+    "asset": "8a5dae3060634214798baec4c76de04b",
+    "fileName": "01a0f137-109d-7787-bfa3-6b76dc01487e.png",
+    "prompt": "Pixel art game character sprite in the exact art style of the reference image (style only, new character): bold 1-pixel pure black outline around every shape, chibi SD proportions about 2.5-3 heads tall, small character dominated by a large prop. Low-resolution pixel art (character about 64px tall, upscaled with hard nearest-neighbor pixels), flat shading with 2-3 tones per color, muted earthy palette (brown, khaki, bone white, dark grey), no anti-aliasing, no dithering. Character: a shaman girl wrapped in a large tattered hooded cloak with deer antlers on the hood, white scarf covering her mouth, amber eyes, holding a tall gnarled wooden staff taller than her, with small skull charms and a hanging bell, eerie green spirit flames and floating green spark particles around the staff. Glowing green is the single accent color. Front-facing idle standing pose, full body, centered, plain flat background.",
+    "negativePrompt": "",
+    "model": "gemini-3.0-pro",
+    "modelName": "Gemini 3.0 Pro",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "68c3ec5a68e4dec46b4a016ee484c646",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

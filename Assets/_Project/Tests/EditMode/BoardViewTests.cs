@@ -366,6 +366,50 @@ namespace ProjectVoid.Tests
             Assert.AreEqual(Vector2.one, view.BodyMaterial.GetTextureScale("_BaseMap"));
         }
 
+        private (BattleState state, Board3D board, Sprite aura) BuildAuraBoard()
+        {
+            var encounter = Make.Encounter(new Vector2Int(3, 3), new Vector2Int(2, 2),
+                new[] { Make.Place(Make.Ally("a", maxHp: 20, speed: 5, deck: new[] { Make.Card("c", damage: 1), Make.Card("c2", damage: 1), Make.Card("c3", damage: 1), Make.Card("c4", damage: 1) }), 0, 1) },
+                new[] { Make.Place(Make.Enemy("e", maxHp: 20, speed: 1), 0, 0) });
+            var auraTexture = new Texture2D(16, 16);
+            Sprite aura = Sprite.Create(auraTexture, new Rect(0, 0, 16, 16), new Vector2(0.5f, 0.5f), 16);
+            encounter.enemyUnits[0].unitData.auraSprite = aura;
+            BattleState state = Make.State(encounter, 3);
+            _root = new GameObject("BoardTestRoot");
+            var board = _root.AddComponent<Board3D>();
+            board.Build(state, TestAssets.Load());
+            return (state, board, aura);
+        }
+
+        // 주술사(보초)의 초록 영혼불은 몸 그림과 따로 몸 주변에 계속 피어오른다.
+        [Test]
+        public void AuraSpriteLoopsAroundTheUnit()
+        {
+            (BattleState state, Board3D board, Sprite aura) = BuildAuraBoard();
+            UnitView view = board.ViewFor(state.Units[1]);
+            Assert.IsNotNull(view.Aura, "aura created");
+            Assert.IsTrue(view.Aura.main.loop, "keeps burning");
+            Assert.IsTrue(view.Aura.isPlaying);
+            Material material = view.Aura.GetComponent<ParticleSystemRenderer>().sharedMaterial;
+            Assert.AreSame(aura.texture, material.GetTexture("_BaseMap"), "draws the flame sprite");
+        }
+
+        [Test]
+        public void UnitWithoutAuraSpriteHasNoAura()
+        {
+            (BattleState state, Board3D board, _) = BuildAuraBoard();
+            Assert.IsNull(board.ViewFor(state.Units[0]).Aura);
+        }
+
+        [Test]
+        public void AuraStopsWhenTheUnitFadesOut()
+        {
+            (BattleState state, Board3D board, _) = BuildAuraBoard();
+            UnitView view = board.ViewFor(state.Units[1]);
+            view.FadeOut().MoveNext();
+            Assert.IsFalse(view.Aura.isEmitting);
+        }
+
         private static Color BaseColorOf(Board3D board, Team team, Vector2Int cell)
             => board.TileRenderer(team, cell).sharedMaterial.GetColor("_BaseColor");
 

@@ -15,5 +15,7 @@ namespace ProjectVoid.Combat
         public Texture2D idleSheet;
         public Texture2D attackSheet;
         public Texture2D hitSheet;
+        // 몸 주변에 계속 피어오르는 이펙트 한 장 (예: 영혼불). 비어 있으면 없음.
+        public Sprite auraSprite;
     }
 }

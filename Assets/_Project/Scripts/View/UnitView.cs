@@ -40,6 +40,10 @@ namespace ProjectVoid.View
         private static readonly Color SparkHot = new Color(1f, 0.95f, 0.8f);
         private static readonly Color SparkWarm = new Color(1f, 0.55f, 0.15f);
         private static readonly int BaseMapId = Shader.PropertyToID("_BaseMap");
+        // 영혼불 한 알이 피어올라 사라지는 시간과 초당 개수. 몸 그림의 64px 중 16px 정도 크기.
+        private const float AuraLifetime = 1.6f;
+        private const float AuraRate = 2.5f;
+        private const float AuraSize = 0.4f;
 
         private ViewAssets _assets;
         // 발 위치를 축으로 도는 피벗. 연출(튀어오르기·흔들림)은 이 피벗을 움직인다.
@@ -132,6 +136,10 @@ namespace ProjectVoid.View
             _bodyMaterial.EnableKeyword("_EMISSION");
             _bodyMaterial.SetColor(EmissionColorId, Color.black);
             Sparks = MakeSparks();
+            if (unit.Data.auraSprite != null)
+            {
+                Aura = MakeAura(unit.Data.auraSprite);
+            }
 
             _shadow = FloorDecal("Shadow", assets.Shadow, new Vector3(0.9f, 0.5f, 1f), 0.01f);
             _shadow.color = ContactShadowColor;
@@ -338,6 +346,7 @@ namespace ProjectVoid.View
         }
 
         public ParticleSystem Sparks { get; private set; }
+        public ParticleSystem Aura { get; private set; }
 
         /// <summary>맞는 첫 순간: 몸을 완전한 흰색으로 칠하고 불꽃을 튀긴다. 히트스톱 중에도 끝나도록 실제 시간으로 잰다.</summary>
         public void StartImpact()
@@ -388,6 +397,10 @@ namespace ProjectVoid.View
             _shadow.enabled = false;
             _ring.enabled = false;
             _acting = true;
+            if (Aura != null)
+            {
+                Aura.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            }
             yield return Coroutines.Tween(FadeTime, t =>
             {
                 ApplyPose(UnitMotion.Death(t));
@@ -469,6 +482,57 @@ namespace ProjectVoid.View
             shape.radius = 0.1f;
             sparkObject.GetComponent<ParticleSystemRenderer>().sharedMaterial = BattleEnvironment.DustMaterial();
             return sparks;
+        }
+
+        // 몸 둘레에서 천천히 떠올라 옅어지며 사라지는 불꽃. 몸이 튀거나 밀려도 이미 뜬 불꽃은 제자리에 남는다.
+        private ParticleSystem MakeAura(Sprite sprite)
+        {
+            var auraObject = new GameObject("Aura");
+            auraObject.transform.SetParent(transform, false);
+            auraObject.transform.localPosition = new Vector3(0f, SpriteHeight * 0.45f, 0f);
+            var aura = auraObject.AddComponent<ParticleSystem>();
+            aura.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            ParticleSystem.MainModule main = aura.main;
+            main.loop = true;
+            main.prewarm = true;
+            main.startLifetime = AuraLifetime;
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0.15f, 0.35f);
+            main.startSize = new ParticleSystem.MinMaxCurve(AuraSize * 0.7f, AuraSize);
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            ParticleSystem.EmissionModule emission = aura.emission;
+            emission.rateOverTime = AuraRate;
+            ParticleSystem.ShapeModule shape = aura.shape;
+            shape.shapeType = ParticleSystemShapeType.Box;
+            shape.scale = new Vector3(1.1f, SpriteHeight * 0.7f, 0.1f);
+            // 박스 모양 기본값은 앞(+Z)으로 쏜다. 위로 피어오르게 돌린다.
+            shape.rotation = new Vector3(-90f, 0f, 0f);
+            ParticleSystem.ColorOverLifetimeModule fade = aura.colorOverLifetime;
+            fade.enabled = true;
+            var gradient = new Gradient();
+            gradient.SetKeys(
+                new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.2f), new GradientAlphaKey(1f, 0.6f), new GradientAlphaKey(0f, 1f) });
+            fade.color = gradient;
+            ParticleSystem.SizeOverLifetimeModule shrink = aura.sizeOverLifetime;
+            shrink.enabled = true;
+            shrink.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 0.5f));
+            auraObject.GetComponent<ParticleSystemRenderer>().sharedMaterial = AuraMaterial(sprite.texture);
+            aura.Play();
+            return aura;
+        }
+
+        // 픽셀 그림을 그대로 보이게 알파 섞기(더하기 아님)로 그린다.
+        private static Material AuraMaterial(Texture texture)
+        {
+            var material = new Material(Shader.Find("Universal Render Pipeline/Particles/Unlit"));
+            material.SetTexture(BaseMapId, texture);
+            material.SetFloat("_Surface", 1f);
+            material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            material.SetFloat("_ZWrite", 0f);
+            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            return material;
         }
 
         private TextMeshPro MakeLabel(string text, float fontSize, Vector3 localPosition)
